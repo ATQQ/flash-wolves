@@ -1,10 +1,11 @@
-export { default as Fw } from './server/index'
+export { default as Fw } from './server'
 
-export { default as Router } from './router/index'
+export { default as Router } from './router'
 
 export {
-  RouterController, RouteMapping, GetMapping, PostMapping, DelMapping, PutMapping, iRouter,
-} from './decorators/index'
+  RouterController, RouteMapping, GetMapping, PostMapping, DelMapping, PutMapping,
+  FwController,
+} from './decorators'
 
 export type {
   FWRequest, FWResponse, Route, Method, Middleware, Callback, FWInterceptors,

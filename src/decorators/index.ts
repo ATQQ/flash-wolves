@@ -4,6 +4,19 @@ import path from 'path'
 export function RouterController(prefix = '') {
   return function routerDecorators(target) {
     target.prototype._prefix = prefix
+    target.prototype.getRoutes = function getRoutes() {
+      const keys: string[] = Object.keys(this.__proto__)
+      const prefix = this._prefix ?? ''
+      const routes = keys.reduce<Route[]>((pre, k) => {
+        const { _route } = this[k]
+        if (_route) {
+          _route.path = path.join(prefix, _route.path)
+          pre.push(_route)
+        }
+        return pre
+      }, [])
+      return routes
+    }
   }
 }
 
@@ -39,25 +52,8 @@ export function PutMapping(path, options?: any) {
   return RouteMapping('put', path, options)
 }
 
-export class iRouter {
+export class FwController {
     _prefix?: string;
 
-    getRoutes(): Route[] {
-      const keys: string[] = Object.keys(this.__proto__)
-      const prefix = this._prefix ?? ''
-      const routes = keys.reduce<Route[]>((pre, k) => {
-        const { _route } = this[k]
-        if (_route) {
-          _route.path = path.join(prefix, _route.path)
-          pre.push(_route)
-        }
-        return pre
-      }, [])
-      return routes
-    }
-
-    // eslint-disable-next-line class-methods-use-this
-    private __proto__(__proto__: any): string[] {
-      throw new Error('Method not implemented.')
-    }
+    getRoutes:() => Route[]
 }

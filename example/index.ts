@@ -1,5 +1,5 @@
 import {
-  Fw, FWRequest, FWResponse, GetMapping, RouterController, iRouter,
+  Fw, FWRequest, FWResponse, GetMapping, RouterController, FwController,
 } from '../dist'
 
 const app = new Fw()
@@ -13,11 +13,13 @@ app.get('/abc/456', (req, res) => {
   res.success()
 })
 
-@RouterController('user')
-class User extends iRouter {
-  @GetMapping('abc/:a', { power: 'ok' })
+@RouterController()
+class User extends FwController {
+  @GetMapping('abc/abc/:a', { power: 'ok' })
   hello(req:FWRequest, res:FWResponse) {
     console.log(req.query)
+    console.log(req.params)
+    res.success()
   }
 }
 
