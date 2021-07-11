@@ -1,7 +1,8 @@
 {
   "name": "flash-wolves",
-  "version": "0.0.2",
+  "version": "0.0.3",
   "license": "MIT",
+  "description": "a simple & flexible & fast web framework",
   "author": {
     "email": "engineerzjl@foxmail.com",
     "name": "sugar",
@@ -18,15 +19,15 @@
   },
   "keywords": [
     "node",
-    "node server",
+    "node web framework",
     "typescript"
   ],
   "main": "dist/index.js",
   "types": "dist/index.d.ts",
   "scripts": {
-    "prepublish": "yarn build",
-    "publish:patch": "npm version patch && yarn publish",
-    "publish": "npm publish",
+    "patch": "npm version patch",
+    "prepub":"yarn build",
+    "pub": "npm publish",
     "prebuild": "rimraf dist",
     "build": "yarn build-bundle && yarn build-types",
     "build-bundle": "rollup -c",
