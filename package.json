@@ -25,7 +25,7 @@
   "types": "dist/index.d.ts",
   "scripts": {
     "prepublish": "yarn build",
-    "publish:patch": "nvm patch && yarn publish",
+    "publish:patch": "npm version patch && yarn publish",
     "publish": "npm publish",
     "prebuild": "rimraf dist",
     "build": "yarn build-bundle && yarn build-types",
