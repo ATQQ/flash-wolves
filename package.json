@@ -1,14 +1,58 @@
 {
   "name": "flash-wolves",
-  "version": "0.0.0",
+  "version": "0.0.3",
+  "license": "MIT",
+  "description": "a simple & flexible & fast web framework",
+  "author": {
+    "email": "engineerzjl@foxmail.com",
+    "name": "sugar",
+    "url": "https://sugarat.top"
+  },
+  "repository": {
+    "type": "git",
+    "directory": "/",
+    "url": "https://github.com/ATQQ/flash-wolves.git"
+  },
+  "bugs": {
+    "url": "https://github.com/ATQQ/flash-wolves/issues",
+    "email": "engineerzjl@foxmail.com"
+  },
+  "keywords": [
+    "node",
+    "node web framework",
+    "typescript"
+  ],
+  "main": "dist/index.js",
+  "types": "dist/index.d.ts",
   "scripts": {
-    "dev": "vite",
-    "build": "tsc && vite build",
-    "serve": "vite preview"
+    "patch": "npm version patch",
+    "prepub":"yarn build",
+    "pub": "npm publish",
+    "prebuild": "rimraf dist",
+    "build": "yarn build-bundle && yarn build-types",
+    "build-bundle": "rollup -c",
+    "build-types": "tsc --emitDeclarationOnly -p ./ && yarn patch-types && yarn roll-types",
+    "patch-types": "node scripts/patch-types.js",
+    "roll-types": "api-extractor run && rimraf dist/temp"
   },
   "devDependencies": {
+    "@microsoft/api-extractor": "^7.18.1",
+    "@rollup/plugin-commonjs": "^19.0.0",
+    "@rollup/plugin-node-resolve": "^13.0.0",
+    "@rollup/plugin-typescript": "^8.2.1",
     "@types/node": "^16.0.1",
-    "typescript": "^4.3.2",
-    "vite": "^2.4.0"
-  }
+    "@typescript-eslint/eslint-plugin": "^4.28.2",
+    "@typescript-eslint/parser": "^4.28.2",
+    "eslint": "^7.30.0",
+    "eslint-config-airbnb-base": "^14.2.1",
+    "eslint-plugin-import": "^2.23.4",
+    "eslint-plugin-todo-ddl": "^1.1.1",
+    "query-string": "^7.0.1",
+    "rimraf": "^3.0.2",
+    "rollup": "^2.53.0",
+    "rollup-plugin-terser": "^7.0.2",
+    "tslib": "^2.3.0",
+    "typescript": "^4.3.2"
+  },
+  "dependencies": {}
 }
