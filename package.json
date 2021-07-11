@@ -2,9 +2,31 @@
   "name": "flash-wolves",
   "version": "0.0.1",
   "license": "MIT",
+  "author": {
+    "email": "engineerzjl@foxmail.com",
+    "name": "sugar",
+    "url": "https://sugarat.top"
+  },
+  "repository": {
+    "type": "git",
+    "directory": "/",
+    "url": "https://github.com/ATQQ/flash-wolves.git"
+  },
+  "bugs": {
+    "url": "https://github.com/ATQQ/flash-wolves/issues",
+    "email": "engineerzjl@foxmail.com"
+  },
+  "keywords": [
+    "node",
+    "node server",
+    "typescript"
+  ],
   "main": "dist/index.js",
   "types": "dist/index.d.ts",
   "scripts": {
+    "prepublish": "yarn build",
+    "publish:patch": "nvm patch && yarn publish",
+    "publish": "npm publish",
     "prebuild": "rimraf dist",
     "build": "yarn build-bundle && yarn build-types",
     "build-bundle": "rollup -c",
@@ -26,6 +48,7 @@
     "eslint-plugin-todo-ddl": "^1.1.1",
     "rimraf": "^3.0.2",
     "rollup": "^2.53.0",
+    "rollup-plugin-terser": "^7.0.2",
     "tslib": "^2.3.0",
     "typescript": "^4.3.2",
     "vite": "^2.4.0"

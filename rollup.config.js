@@ -1,13 +1,14 @@
 import resolve from '@rollup/plugin-node-resolve';
 import commonjs from '@rollup/plugin-commonjs';
 import typescript from '@rollup/plugin-typescript';
+import { terser } from 'rollup-plugin-terser'
 
 export default {
   input: 'src/index.ts',
   output: [
-    { 
-      file:'dist/index.js',
-      name:'fw',
+    {
+      file: 'dist/index.js',
+      name: 'fw',
       format: 'cjs',
     },
     // { 
@@ -25,10 +26,11 @@ export default {
     resolve(),
     commonjs(), // 将 CommonJS 转换成 ES2015 模块供 Rollup 处理
     typescript({
-        target: 'es5',
-        include: ['src/**/*.ts'],
-        esModuleInterop: true,
-        "module":'esnext'
-      }) // 解析TypeScript
+      target: 'es5',
+      include: ['src/**/*.ts'],
+      esModuleInterop: true,
+      module: 'esnext'
+    }),
+    terser()
   ]
-}; 
+};
