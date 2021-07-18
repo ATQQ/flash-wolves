@@ -1,28 +1,27 @@
 # flash-wolves⚡️
+简称FW(LOL闪电狼战队)
 
-Abbreviation FW (LOL Flash Wolves)
+一个非常简单的Node Web框架
 
-A very simple Node Web framework
+* ⚡️ 启动快
+* 😊 非常简单 
+* 🌟 支持装饰器
+* 🔑 完整的类型定义
+* 📦 打包进行了压缩（非常小）
 
-* ⚡️ Fast Start
-* 😊 very simple 
-* 🌟 support Decorators
-* 🔑 Fully Typed APIs
-* 📦 Optimized Build
+# 语言
+* [English](./README.md)
+* 简体中文
 
-# Language
-* English
-* [简体中文](./README-zh.md)
-
-# Quick Start
-## Installing Dependencies
+# 快速开始
+## 安装依赖
 ```sh
 npm install flash-wolves
 # or
 yarn add flash-wolves
 ```
 
-## Code
+## 编码
 index.js
 ```js
 const { Fw } = require('flash-wolves')
@@ -39,14 +38,15 @@ app.listen(3000)
 node index.js
 ```
 
-# Advanced Usage
+# 高级
+
 ## Router
-Using `Router` makes it easier to write routes modularly
+使用`Router`更方便模块化书写路由
 ```js
 const { Fw, Router } = require('flash-wolves')
 const app = new Fw()
 
-// Router without public prefix
+// 不带公共前缀Router
 const user = new Router()
 
 // GET /user/login
@@ -56,7 +56,7 @@ user.get('/user/login',(req,res)=>{
 
 app.addRoutes(user.getRoutes())
 
-// Router with public prefix
+// 带前缀Router
 const task = new Router('task')
 
 // GET /task/list
@@ -71,10 +71,10 @@ app.get('/',(req,res)=>{
 app.listen(3000)
 ```
 
-## Decorator
-Here the direct use of `typescript`
+## 装饰器
+这里直接使用typescript
 
-Using decorators is a much clearer structure of the code
+使用装饰器，是代码结构更加清晰
 
 index.ts
 ```ts
@@ -95,15 +95,15 @@ app.addRoutes(new User().getRoutes())
 app.listen()
 
 ```
-See [documentation](https://www.npmjs.com/package/ts-node) for ts-node usage
+ts-node 使用请参看[文档](https://www.npmjs.com/package/ts-node)
 
 ```sh
 ts-node index.ts
 ```
-# Planning
-* [ ] All basic operations of Router are plugged into the decorator
-* [ ] Inject request and response on the internal function this for routing
-* [ ] Improve the usage documentation (VitePress)
-* [ ] Direct return content 
-* [ ] Add res.xxx methods (like res.html(str))
-* [ ] . Stay tuned!
+# 规划
+* [ ] Router的所有基本操作都接入装饰器
+* [ ] 路由内部函数this上注入request与response
+* [ ] 完善使用文档（VitePress）
+* [ ] 直接返回的内容 
+* [ ] 添加res.xxx方法 (如res.html(str))
+* [ ] 。。。敬请期待
