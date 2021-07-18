@@ -1,5 +1,5 @@
 import nodeUrl from 'url'
-import qs from 'query-string'
+import qs from 'querystring'
 import { ServerOptions } from 'http'
 import {
   FWRequest, FWResponse, Route,
