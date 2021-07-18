@@ -44,6 +44,12 @@ class Router {
 
     public put = this.controller('put')
 
+    public patch = this.controller('patch')
+
+    public head = this.controller('head')
+
+    public options = this.controller('options')
+
     public getRoutes(): Route[] {
       return this._routes
     }
