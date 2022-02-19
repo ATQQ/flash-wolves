@@ -53,7 +53,7 @@ export function PutMapping(path, options?: any) {
 }
 
 export class FwController {
-    _prefix?: string;
+  _prefix?: string
 
-    getRoutes:() => Route[]
+  getRoutes:() => Route[]
 }
