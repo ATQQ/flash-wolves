@@ -125,8 +125,8 @@ export default class FW extends Router {
     this.middleWares.unshift(addInterceptor(() => middleware))
   }
 
-  public listen(port = PORT, hostname = HOSTNAME, callback?: () => void): void {
-    this.server.listen(port, hostname, callback)
+  public listen(port, hostname, callback?: () => void): void {
+    this.server.listen(port || PORT, hostname || HOSTNAME, callback)
     console.log('server start success', `http://${hostname}:${port}`)
   }
 
