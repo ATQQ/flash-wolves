@@ -1,8 +1,8 @@
 // types
 import nodePath from 'path'
-import {
+import type {
   Callback, Method, Route, Controller,
-} from 'types'
+} from '../types'
 
 class Router {
     private _prefix: string

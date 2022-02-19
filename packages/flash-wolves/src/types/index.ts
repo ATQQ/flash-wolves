@@ -1,15 +1,15 @@
 import { IncomingMessage, ServerResponse } from 'http'
 
-interface CodeMsg {
+export interface CodeMsg {
     code: number
     msg: string
 }
 
-type reqJson = (data: unknown) => void
-type reqNotFound = () => void
-type reqSuccess = (data?: unknown) => void
-type reqFail = (code: number, msg: string, data?: unknown) => void
-type failWithError = (err: CodeMsg) => void
+export type reqJson = (data: unknown) => void
+export type reqNotFound = () => void
+export type reqSuccess = (data?: unknown) => void
+export type reqFail = (code: number, msg: string, data?: unknown) => void
+export type failWithError = (err: CodeMsg) => void
 
 export interface SuperRequest {
     query?: any

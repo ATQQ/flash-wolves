@@ -3,7 +3,7 @@ import qs from 'querystring'
 import { ServerOptions } from 'http'
 import {
   FWRequest, FWResponse, Route,
-} from 'types'
+} from '../../types'
 
 enum ContentType {
     formData = 'application/x-www-form-urlencoded',

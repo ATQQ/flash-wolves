@@ -4,7 +4,7 @@ import {
   RuntimeErrorInterceptor,
   FWInterceptors,
   FWRequest, FWResponse, Middleware, MiddlewarePosition,
-} from 'types'
+} from '../types'
 
 // router
 import Router from '../router'

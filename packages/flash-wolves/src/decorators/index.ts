@@ -1,5 +1,5 @@
-import { Method, Route } from 'types'
 import path from 'path'
+import type { Method, Route } from '../types'
 
 export function RouterController(prefix = '') {
   return function routerDecorators(target) {
