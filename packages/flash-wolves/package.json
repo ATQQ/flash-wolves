@@ -27,5 +27,9 @@
   "scripts": {
     "dev": "tsup --watch",
     "build": "rimraf dist && tsup --minify"
-  }
+  },
+  "files": [
+    "dist",
+    "package.json"
+  ]
 }
