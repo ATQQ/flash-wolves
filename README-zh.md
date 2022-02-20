@@ -18,33 +18,38 @@
 ```sh
 npm install flash-wolves
 # or
+pnpm add flash-wolves
+# or
 yarn add flash-wolves
 ```
 
-## 编码
+## 简单使用
+
 index.js
 ```js
-const { Fw } = require('flash-wolves')
-const app = new Fw()
+const { App } = require('flash-wolves')
+const app = new App()
 
-app.get('/a/b', (req, res) => {
+app.get('/hello/world', (req, res) => {
     console.log(req.query)
     res.success()
 })
 
 app.listen(3000)
 ```
+
+运行
 ```sh
 node index.js
 ```
 
-# 高级
+# 高级用法
 
 ## Router
 使用`Router`更方便模块化书写路由
 ```js
-const { Fw, Router } = require('flash-wolves')
-const app = new Fw()
+const { App, Router } = require('flash-wolves')
+const app = new App()
 
 // 不带公共前缀Router
 const user = new Router()
@@ -54,8 +59,6 @@ user.get('/user/login',(req,res)=>{
     res.success()
 })
 
-app.addRoutes(user.getRoutes())
-
 // 带前缀Router
 const task = new Router('task')
 
@@ -63,7 +66,8 @@ const task = new Router('task')
 task.get('/list',(req,res)=>{
     res.success()
 })
-app.addRoutes(task.getRoutes())
+
+app.addRouter([user,task])
 
 app.get('/',(req,res)=>{
     res.json(app.getRoutes())
@@ -74,16 +78,16 @@ app.listen(3000)
 ## 装饰器
 这里直接使用typescript
 
-使用装饰器，是代码结构更加清晰
+使用装饰器，使代码结构更加清晰
 
 index.ts
 ```ts
-import { Fw, FwController, FWRequest, FWResponse, GetMapping, RouterController } from 'flash-wolves'
+import { Fw, FWRequest, FWResponse, GetMapping, RouterController, App } from 'flash-wolves'
 
-const app = new Fw()
+const app = new App()
 
 @RouterController()
-class User extends FwController {
+class User {
 
     @GetMapping('/user/login')
     login(req: FWRequest, res: FWResponse) {
@@ -91,17 +95,29 @@ class User extends FwController {
     }
 }
 
-app.addRoutes(new User().getRoutes())
-app.listen()
+app.addController(User)
+
+// 支持传递数组
+// app.addController([User,Task])
+// or 
+// 支持构造函数实例化
+// app.addController(new User())
+
+app.listen(3000)
 
 ```
-ts-node 使用请参看[文档](https://www.npmjs.com/package/ts-node)
+* [ts-node](https://www.npmjs.com/package/ts-node) 使用文档
+* [esno](https://www.npmjs.com/package/esno) 使用文档
+* [tsup](https://www.npmjs.com/package/tsup) 使用文档
 
 ```sh
 ts-node index.ts
 ```
+## 更多示例
+查看 [packages/examples](./packages/examples)
+
 # 规划
-* [ ] Router的所有基本操作都接入装饰器
+* [x] Router的所有基本操作都接入装饰器
 * [ ] 路由内部函数this上注入request与response
 * [ ] 完善使用文档（VitePress）
 * [ ] 直接返回的内容 

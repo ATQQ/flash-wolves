@@ -38,8 +38,12 @@ export function expandHttpRespPrototype(http: ServerOptions): void {
   const resp: any = http.ServerResponse.prototype
   resp.notFound = function notFound() {
     this.statusCode = 404
-    this.setHeader('Content-Type', 'text/html;charset=utf-8')
-    this.end('<h1>url not found</h1>')
+    // this.setHeader('Content-Type', 'text/html;charset=utf-8')
+    // this.end('<h1>url not found</h1>')
+    this.end(JSON.stringify({
+      code: 404,
+      msg: 'not found',
+    }))
   }
 
   resp.json = function json(data) {

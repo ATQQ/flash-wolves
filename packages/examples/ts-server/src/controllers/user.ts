@@ -4,22 +4,11 @@ import {
 
 import type { FWRequest, FWResponse } from 'flash-wolves'
 
-@RouterController()
+@RouterController('user')
 export default class User {
-  @GetMapping('abc/abc/:a', { power: 'ok' })
+  @GetMapping('info/:id', { power: 'ok' })
   hello(req:FWRequest, res:FWResponse) {
-    console.log(req.query)
     console.log(req.params)
-    this.test()
-    User.test2()
     res.success()
-  }
-
-  test() {
-    console.log('test1')
-  }
-
-  static test2() {
-    console.log('test2')
   }
 }

@@ -19,22 +19,27 @@ A very simple Node Web framework
 ```sh
 npm install flash-wolves
 # or
+pnpm add flash-wolves
+# or
 yarn add flash-wolves
 ```
 
-## Code
+## Usage
+
 index.js
 ```js
-const { Fw } = require('flash-wolves')
-const app = new Fw()
+const { App } = require('flash-wolves')
+const app = new App()
 
-app.get('/a/b', (req, res) => {
+app.get('/hello/world', (req, res) => {
     console.log(req.query)
     res.success()
 })
 
 app.listen(3000)
 ```
+
+Run
 ```sh
 node index.js
 ```
@@ -43,8 +48,8 @@ node index.js
 ## Router
 Using `Router` makes it easier to write routes modularly
 ```js
-const { Fw, Router } = require('flash-wolves')
-const app = new Fw()
+const { App, Router } = require('flash-wolves')
+const app = new App()
 
 // Router without public prefix
 const user = new Router()
@@ -54,8 +59,6 @@ user.get('/user/login',(req,res)=>{
     res.success()
 })
 
-app.addRoutes(user.getRoutes())
-
 // Router with public prefix
 const task = new Router('task')
 
@@ -63,7 +66,8 @@ const task = new Router('task')
 task.get('/list',(req,res)=>{
     res.success()
 })
-app.addRoutes(task.getRoutes())
+
+app.addRouter([user,task])
 
 app.get('/',(req,res)=>{
     res.json(app.getRoutes())
@@ -78,12 +82,12 @@ Using decorators is a much clearer structure of the code
 
 index.ts
 ```ts
-import { Fw, FwController, FWRequest, FWResponse, GetMapping, RouterController } from 'flash-wolves'
+import { Fw, FWRequest, FWResponse, GetMapping, RouterController, App } from 'flash-wolves'
 
-const app = new Fw()
+const app = new App()
 
 @RouterController()
-class User extends FwController {
+class User {
 
     @GetMapping('/user/login')
     login(req: FWRequest, res: FWResponse) {
@@ -91,17 +95,36 @@ class User extends FwController {
     }
 }
 
-app.addRoutes(new User().getRoutes())
-app.listen()
+app.addController(User)
+// support array
+// app.addController([User,Task])
+// or 
+// if constructor have some params
+// app.addController(new User())
+
+app.listen(3000)
 
 ```
-See [documentation](https://www.npmjs.com/package/ts-node) for ts-node usage
+* [ts-node](https://www.npmjs.com/package/ts-node) usage documentation
+* [esno](https://www.npmjs.com/package/esno) usage documentation
+* [tsup](https://www.npmjs.com/package/tsup) usage documentation
 
 ```sh
+esno index.ts
+
+# or
 ts-node index.ts
+
+# or 
+npx tsup index.ts
+node dist/index.js
 ```
+
+## More Example
+see [packages/examples](./packages/examples)
+
 # Planning
-* [ ] All basic operations of Router are plugged into the decorator
+* [x] All basic operations of Router are plugged into the decorator
 * [ ] Inject request and response on the internal function this for routing
 * [ ] Improve the usage documentation (VitePress)
 * [ ] Direct return content 

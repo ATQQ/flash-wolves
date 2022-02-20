@@ -1,5 +1,6 @@
 import http from 'http'
 // types
+import { join } from 'path'
 import {
   RuntimeErrorInterceptor,
   FWInterceptors,
@@ -118,9 +119,28 @@ export default class FW extends Router {
     this.server = http.createServer(this.callback() as any)
   }
 
+  public addController(controllers:any|any[]) {
+    controllers = [controllers].flat()
+    for (const controller of controllers) {
+      const constructor = controller?.name ? controller : controller.__proto__.constructor
+      const prefix = constructor._prefix
+      const { routeMap } = constructor
+      const name = constructor?.name || 'controller'
+
+      if (!routeMap) {
+        console.error(`${name} is not valid`)
+        return
+      }
+      for (const [_, route] of routeMap) {
+        route.path = join(prefix, route.path)
+        this._routes.push(route)
+      }
+    }
+  }
+
   /**
-     * 处理原生的httpRequest 与 httpResponse
-     */
+   * 处理原生的httpRequest 与 httpResponse
+   */
   public use(middleware: Middleware): void {
     this.middleWares.unshift(addInterceptor(() => middleware))
   }

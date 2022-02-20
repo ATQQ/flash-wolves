@@ -39,23 +39,10 @@ class Router {
     }
   }
 
-  public registerController(controllers:any|any[]) {
-    controllers = [controllers].flat()
-    for (const controller of controllers) {
-      const constructor = controller?.name ? controller : controller.__proto__.constructor
-      const prefix = constructor._prefix
-      const { routeMap } = constructor
-      const name = constructor?.name || 'controller'
-
-      if (!routeMap) {
-        console.error(`${name} is not valid`)
-        return
-      }
-      for (const [_, route] of routeMap) {
-        route.path = join(prefix, route.path)
-        this._routes.push(route)
-      }
-    }
+  public addRouter(router:Router|Router[]) {
+    [router].flat().forEach((r) => {
+      this.addRoutes(r.getRoutes())
+    })
   }
 
   // public setControllerDir(dir:string|string[]) {
@@ -64,7 +51,7 @@ class Router {
   //     const files = readdirSync(d, { withFileTypes: true })
   //     for (const file of files) {
   //       if (file.isFile()) {
-  //         this.registerController(require(join(d, file.name)))
+  //         this.addController(require(join(d, file.name)))
   //       }
   //     }
   //   }
