@@ -3,7 +3,7 @@ import User from './controllers/user'
 
 const app = new App()
 
-app.addController(User)
+app.addController(new User())
 
 console.log(app.routes)
 

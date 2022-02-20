@@ -67,6 +67,7 @@ export function expandHttpRespPrototype(http: ServerOptions): void {
 
 export function matchRoute(routes: Route[], req: FWRequest, res: FWResponse): void {
   const route = _matchRoute(routes, req)
+  // TODO: 改造成支持多路由next
   if (route) {
     req.route = route
     return
@@ -74,9 +75,13 @@ export function matchRoute(routes: Route[], req: FWRequest, res: FWResponse): vo
   res.notFound()
 }
 
-export function runRoute(req: FWRequest, res: FWResponse): void {
+export async function runRoute(req: FWRequest, res: FWResponse) {
   const { callback } = req.route || {}
-  return callback && callback(req, res)
+  const result = await (callback && callback(req, res))
+  if (!res.writableEnded) {
+    res.success(result)
+  }
+  return result
 }
 
 export function defaultOperate(_req: FWRequest, res: FWResponse) {
