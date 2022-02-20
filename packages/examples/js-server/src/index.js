@@ -11,5 +11,5 @@ app.get('/abc/456', (req, res) => {
   console.log(req.query)
   res.success()
 })
-
+console.log(app.routes)
 app.listen(3001)

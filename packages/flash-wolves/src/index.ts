@@ -6,7 +6,6 @@ export { default as Router } from './router'
 
 export {
   RouterController, RouteMapping, GetMapping, PostMapping, DelMapping, PutMapping,
-  FwController,
 } from './decorators'
 
 export * from './types'

@@ -1,5 +1,6 @@
-// types
-import nodePath from 'path'
+/* eslint-disable global-require */
+/* eslint-disable import/no-dynamic-require */
+import { join } from 'path'
 import type {
   Callback, Method, Route, Controller,
 } from '../types'
@@ -8,7 +9,7 @@ class Router {
   private _prefix: string
 
   private controller(method: Method): Controller {
-    return this.registerRouter.bind(this, method)
+    return this.registerRoute.bind(this, method)
   }
 
   protected _routes: Route[]
@@ -18,14 +19,14 @@ class Router {
     this._routes = []
   }
 
-  public registerRouter(method: Method, path: string, callback: Callback, options?: unknown) {
+  public registerRoute(method: Method, path: string, callback: Callback, options?: unknown) {
     if (options) {
       this.addRoute({
-        method, path: nodePath.join(this._prefix, path), callback, options,
+        method, path: join(this._prefix, path), callback, options,
       })
       return
     }
-    this.addRoute({ method, path: nodePath.join(this._prefix, path), callback })
+    this.addRoute({ method, path: join(this._prefix, path), callback })
   }
 
   public addRoute(route: Route): void {
@@ -33,8 +34,41 @@ class Router {
   }
 
   public addRoutes(routes: Route[]): void {
-    this._routes.push(...routes)
+    if (Array.isArray(routes)) {
+      this._routes.push(...routes)
+    }
   }
+
+  public registerController(controllers:any|any[]) {
+    controllers = [controllers].flat()
+    for (const controller of controllers) {
+      const constructor = controller?.name ? controller : controller.__proto__.constructor
+      const prefix = constructor._prefix
+      const { routeMap } = constructor
+      const name = constructor?.name || 'controller'
+
+      if (!routeMap) {
+        console.error(`${name} is not valid`)
+        return
+      }
+      for (const [_, route] of routeMap) {
+        route.path = join(prefix, route.path)
+        this._routes.push(route)
+      }
+    }
+  }
+
+  // public setControllerDir(dir:string|string[]) {
+  //   const dirs = [dir].flat()
+  //   for (const d of dirs) {
+  //     const files = readdirSync(d, { withFileTypes: true })
+  //     for (const file of files) {
+  //       if (file.isFile()) {
+  //         this.registerController(require(join(d, file.name)))
+  //       }
+  //     }
+  //   }
+  // }
 
   public get = this.controller('get')
 
@@ -52,6 +86,10 @@ class Router {
 
   public getRoutes(): Route[] {
     return this._routes
+  }
+
+  get routes() {
+    return this._routes.map((v) => [`${v.method.toUpperCase()}`, `${v.path}`])
   }
 }
 
