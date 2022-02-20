@@ -1,0 +1,35 @@
+{
+  "name": "flash-wolves",
+  "version": "0.1.0",
+  "license": "MIT",
+  "description": "a simple & flexible & fast web framework",
+  "author": {
+    "email": "engineerzjl@foxmail.com",
+    "name": "sugar",
+    "url": "https://sugarat.top"
+  },
+  "repository": {
+    "type": "git",
+    "directory": "/",
+    "url": "https://github.com/ATQQ/flash-wolves.git"
+  },
+  "bugs": {
+    "url": "https://github.com/ATQQ/flash-wolves/issues",
+    "email": "engineerzjl@foxmail.com"
+  },
+  "keywords": [
+    "node",
+    "node web framework",
+    "typescript"
+  ],
+  "main": "dist/index.js",
+  "types": "dist/index.d.ts",
+  "scripts": {
+    "dev": "tsup --watch",
+    "build": "rimraf dist && tsup --minify"
+  },
+  "files": [
+    "dist",
+    "package.json"
+  ]
+}

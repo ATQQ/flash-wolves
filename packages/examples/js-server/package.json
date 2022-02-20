@@ -1,0 +1,17 @@
+{
+  "name": "js-server",
+  "version": "1.0.0",
+  "description": "",
+  "private": true,
+  "main": "index.js",
+  "scripts": {
+    "start": "node src/index.js",
+    "dev":"nodemon src/index.js"
+  },
+  "dependencies": {
+    "flash-wolves": "workspace:*"
+  },
+  "keywords": [],
+  "author": "",
+  "license": "ISC"
+}

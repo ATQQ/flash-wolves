@@ -12,22 +12,12 @@
     "noImplicitThis": false,
     "noImplicitAny": false,
     "declaration": true,
-    "declarationDir": "./dist/temp",
     "baseUrl": ".",
     "outDir": "./dist",
-    "paths": {
-      "@/*": [
-        "src/*"
-      ],
-    },
     "noImplicitOverride": true,
     "noUnusedLocals": false,
   },
-  "include": [
-    "src/**/*",
-    "types"
-  ],
   "exclude": [
-    "node_modules"
+    "node_modules",
   ]
 }

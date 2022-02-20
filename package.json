@@ -1,57 +1,42 @@
 {
-  "name": "flash-wolves",
-  "version": "0.0.3",
-  "license": "MIT",
+  "name": "flash-wolves-monorepo",
+  "private": true,
   "description": "a simple & flexible & fast web framework",
   "author": {
     "email": "engineerzjl@foxmail.com",
     "name": "sugar",
     "url": "https://sugarat.top"
   },
+  "scripts": {
+    "lint": "eslint packages/** --ext .js,.ts --fix"
+  },
+  "devDependencies": {
+    "@types/node": "^16.11.25",
+    "@typescript-eslint/eslint-plugin": "^5.12.0",
+    "@typescript-eslint/parser": "^5.12.0",
+    "eslint": "^8.9.0",
+    "eslint-config-airbnb-base": "^15.0.0",
+    "eslint-plugin-import": "^2.25.4",
+    "eslint-plugin-todo-ddl": "^1.1.1",
+    "esno": "^0.14.1",
+    "nodemon": "^2.0.15",
+    "rimraf": "^3.0.2",
+    "tsup": "^5.11.13",
+    "typescript": "^4.5.5",
+    "npm-run-all": "^4.1.5"
+  },
   "repository": {
     "type": "git",
-    "directory": "/",
-    "url": "https://github.com/ATQQ/flash-wolves.git"
-  },
-  "bugs": {
-    "url": "https://github.com/ATQQ/flash-wolves/issues",
-    "email": "engineerzjl@foxmail.com"
+    "url": "git+https://github.com/ATQQ/flash-wolves.git"
   },
   "keywords": [
     "node",
     "node web framework",
     "typescript"
   ],
-  "main": "dist/index.js",
-  "types": "dist/index.d.ts",
-  "scripts": {
-    "patch": "npm version patch",
-    "prepub": "yarn build",
-    "pub": "npm publish",
-    "prebuild": "rimraf dist",
-    "build": "yarn build-bundle && yarn build-types",
-    "build-bundle": "rollup -c",
-    "build-types": "tsc --emitDeclarationOnly -p ./ && yarn patch-types && yarn roll-types",
-    "patch-types": "node scripts/patch-types.js",
-    "roll-types": "api-extractor run && rimraf dist/temp"
+  "license": "MIT",
+  "bugs": {
+    "url": "https://github.com/ATQQ/flash-wolves/issues"
   },
-  "devDependencies": {
-    "@microsoft/api-extractor": "^7.18.1",
-    "@rollup/plugin-commonjs": "^19.0.0",
-    "@rollup/plugin-node-resolve": "^13.0.0",
-    "@rollup/plugin-typescript": "^8.2.1",
-    "@types/node": "^16.0.1",
-    "@typescript-eslint/eslint-plugin": "^4.28.2",
-    "@typescript-eslint/parser": "^4.28.2",
-    "eslint": "^7.30.0",
-    "eslint-config-airbnb-base": "^14.2.1",
-    "eslint-plugin-import": "^2.23.4",
-    "eslint-plugin-todo-ddl": "^1.1.1",
-    "rimraf": "^3.0.2",
-    "rollup": "^2.53.0",
-    "rollup-plugin-terser": "^7.0.2",
-    "tslib": "^2.3.0",
-    "typescript": "^4.3.2"
-  },
-  "dependencies": {}
+  "homepage": "https://github.com/ATQQ/flash-wolves#readme"
 }

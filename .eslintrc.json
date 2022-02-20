@@ -1,9 +1,18 @@
 {
-    "parser": "@typescript-eslint/parser",
-    "parserOptions": {
-        "ecmaVersion": 12,
-        "sourceType": "module"
-    },
+    "root": true,
+    "overrides": [
+      {
+        "files": ["*.js"]
+      },
+      {
+        "files": ["*.ts"],
+        "parser": "@typescript-eslint/parser",
+        "parserOptions": {
+            "ecmaVersion": 12,
+            "sourceType": "module"
+        }
+      }
+    ],
     "env": {
         "node": true,
         "es2021": true
