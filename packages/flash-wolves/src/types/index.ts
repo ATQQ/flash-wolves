@@ -32,7 +32,7 @@ export interface FWResponse extends ServerResponse, SuperResponse { }
 
 export type Middleware = (req: FWRequest, res?: FWResponse) => void
 export type MiddlewarePosition = 'first' | 'last'
-export type Callback = (req: FWRequest, res: FWResponse) => void
+export type Callback = (req: FWRequest, res: FWResponse) => any
 
 export type Method = 'get' | 'post' | 'put' | 'delete' | 'patch' | 'head' | 'options'
 

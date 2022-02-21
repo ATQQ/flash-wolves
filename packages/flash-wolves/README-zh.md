@@ -82,16 +82,22 @@ app.listen(3000)
 
 index.ts
 ```ts
-import { Fw, FWRequest, FWResponse, GetMapping, RouterController, App } from 'flash-wolves'
+import { FWRequest, FWResponse, Get, RouterController, App, ReqQuery, ReqParams } from 'flash-wolves'
 
 const app = new App()
 
 @RouterController()
 class User {
 
-    @GetMapping('/user/login')
+    @Get('/user/login')
     login(req: FWRequest, res: FWResponse) {
         res.success()
+    }
+    
+    @Get('info/:id', { power: 'ok' })
+    getUserInfo(@ReqQuery query, @ReqParams params) {
+      console.log(query, params)
+      return query
     }
 }
 
@@ -118,8 +124,7 @@ ts-node index.ts
 
 # 规划
 * [x] Router的所有基本操作都接入装饰器
-* [ ] 路由内部函数this上注入request与response
 * [ ] 完善使用文档（VitePress）
-* [ ] 直接返回的内容 
+* [x] 直接返回的内容 
 * [ ] 添加res.xxx方法 (如res.html(str))
 * [ ] 。。。敬请期待
