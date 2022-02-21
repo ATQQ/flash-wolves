@@ -9,6 +9,7 @@ export default class User {
   @Get('info/:id', { power: 'ok' })
   getUserInfo(@ReqQuery query, req:FWRequest, res:FWResponse) {
     console.log(query)
+    console.log(req.params.id)
     return req.params
   }
 }

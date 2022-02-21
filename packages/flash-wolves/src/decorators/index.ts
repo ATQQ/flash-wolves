@@ -74,12 +74,11 @@ export function RouteMapping(method: Method, path: string, options?: any) {
     // 原来的函数
     const fn = descriptor.value
 
-    const argv = Array.from({ length: fn.length })
-
     target.constructor.routeMap.set(`${method}-${path}`, {
       method,
       path,
       callback: (req:FWRequest, res:FWResponse) => {
+        const argv = Array.from({ length: fn.length })
         // 修改参数
         for (const [param, fnNameWithIndx] of requestParamsMap.entries()) {
           const value = req[param]

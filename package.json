@@ -8,7 +8,8 @@
     "url": "https://sugarat.top"
   },
   "scripts": {
-    "lint": "eslint packages/** --ext .js,.ts --fix"
+    "lint": "eslint packages/** --ext .js,.ts --fix",
+    "dev":"pnpm dev --recursive --parallel --filter flash-wolves --filter ts-server"
   },
   "devDependencies": {
     "@types/node": "^16.11.25",
