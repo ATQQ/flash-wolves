@@ -82,16 +82,22 @@ Using decorators is a much clearer structure of the code
 
 index.ts
 ```ts
-import { Fw, FWRequest, FWResponse, GetMapping, RouterController, App } from 'flash-wolves'
+import { FWRequest, FWResponse, Get, RouterController, App, ReqQuery, ReqParams } from 'flash-wolves'
 
 const app = new App()
 
 @RouterController()
 class User {
 
-    @GetMapping('/user/login')
+    @Get('/user/login')
     login(req: FWRequest, res: FWResponse) {
         res.success()
+    }
+    
+    @Get('info/:id', { power: 'ok' })
+    getUserInfo(@ReqQuery query, @ReqParams params) {
+      console.log(query, params)
+      return query
     }
 }
 
@@ -125,8 +131,7 @@ see [packages/examples](./packages/examples)
 
 # Planning
 * [x] All basic operations of Router are plugged into the decorator
-* [ ] Inject request and response on the internal function this for routing
 * [ ] Improve the usage documentation (VitePress)
-* [ ] Direct return content 
+* [x] Direct return content 
 * [ ] Add res.xxx methods (like res.html(str))
 * [ ] . Stay tuned!
