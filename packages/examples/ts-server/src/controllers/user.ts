@@ -1,15 +1,12 @@
 import {
-  RouterController, Get, ReqQuery,
+  RouterController, Get, ReqQuery, ReqParams,
 } from 'flash-wolves'
-
-import type { FWRequest, FWResponse } from 'flash-wolves'
 
 @RouterController('user')
 export default class User {
   @Get('info/:id', { power: 'ok' })
-  getUserInfo(@ReqQuery query, req:FWRequest, res:FWResponse) {
-    console.log(query)
-    console.log(req.params.id)
-    return req.params
+  getUserInfo(@ReqQuery query, @ReqParams params) {
+    console.log(query, params)
+    return query
   }
 }

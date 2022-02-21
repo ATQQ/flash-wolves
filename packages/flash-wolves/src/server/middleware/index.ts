@@ -2,7 +2,7 @@ import nodeUrl from 'url'
 import qs from 'querystring'
 import { ServerOptions } from 'http'
 import {
-  FWRequest, FWResponse, Route,
+  FWRequest, FWResponse, Route, CodeMsg,
 } from '../../types'
 
 enum ContentType {
@@ -65,6 +65,52 @@ export function expandHttpRespPrototype(http: ServerOptions): void {
   }
 }
 
+const methodMap = {
+  'fw-404': 'notFound',
+  'fw-json': 'json',
+  'fw-success': 'success',
+  'fw-fail': 'fail',
+  'fw-failWithError': 'failWithError',
+}
+
+// TODO:实现返回数据预览
+export class Response {
+  static notFound():unknown {
+    return {
+      'fw-type': methodMap['fw-404'],
+      data: [],
+    }
+  }
+
+  static json(data:unknown):unknown {
+    return {
+      type: methodMap['fw-json'],
+      data: [data],
+    }
+  }
+
+  static success(data:unknown):unknown {
+    return {
+      type: methodMap['fw-success'],
+      data: [data],
+    }
+  }
+
+  static fail(code:number, msg:string, data?: unknown):unknown {
+    return {
+      type: methodMap['fw-fail'],
+      data: [code, msg, data],
+    }
+  }
+
+  static failWithError(err:CodeMsg):unknown {
+    return {
+      type: methodMap['fw-failWithError'],
+      data: [err],
+    }
+  }
+}
+
 export function matchRoute(routes: Route[], req: FWRequest, res: FWResponse): void {
   const route = _matchRoute(routes, req)
   // TODO: 改造成支持多路由next
@@ -79,6 +125,10 @@ export async function runRoute(req: FWRequest, res: FWResponse) {
   const { callback } = req.route || {}
   const result = await (callback && callback(req, res))
   if (!res.writableEnded) {
+    if (typeof result === 'object' && result !== null && typeof res[result?.type] === 'function') {
+      res[result?.type](...result.data)
+      return result
+    }
     res.success(result)
   }
   return result
