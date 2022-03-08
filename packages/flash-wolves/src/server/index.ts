@@ -3,8 +3,7 @@ import http from 'http'
 import { join } from 'path'
 import {
   RuntimeErrorInterceptor,
-  FWInterceptors,
-  FWRequest, FWResponse, Middleware, MiddlewarePosition,
+  FWRequest, FWResponse, Middleware, MiddlewarePosition, AppOptions, AppResponseCompressType,
 } from '../types'
 
 // router
@@ -34,6 +33,8 @@ export default class FW extends Router {
   private server: http.Server
 
   private middleWares: Middleware[]
+
+  private contentEncoding: AppResponseCompressType[]
 
   private beforeRuntimeErrorInterceptor: RuntimeErrorInterceptor | undefined
 
@@ -80,13 +81,32 @@ export default class FW extends Router {
     }
   }
 
-  constructor(afterRequestCallback?: Middleware, interceptors?: FWInterceptors) {
+  // 重载配置
+  constructor();
+
+  constructor(afterRequest?: Middleware);
+
+  constructor(options?: AppOptions);
+
+  constructor(afterRequest?: Middleware, options?: AppOptions);
+
+  constructor(v1?: Middleware | AppOptions, v2?: AppOptions) {
     super()
     // 初始化
     this.middleWares = []
     const {
-      printReq, beforeMathRoute, beforeRunRoute, beforeReturnRuntimeError, catchRuntimeError,
-    } = interceptors || {}
+      printReq, beforeMathRoute, beforeRunRoute,
+      beforeReturnRuntimeError, catchRuntimeError,
+      afterRequest,
+      compress,
+    } = (typeof v1 !== 'function' ? v1 : v2) || {}
+
+    if (typeof compress !== 'boolean') {
+      this.contentEncoding = [compress || 'gzip'].flat()
+    } else {
+      this.contentEncoding = compress ? ['gzip'] : []
+    }
+
     if (beforeReturnRuntimeError) {
       this.beforeRuntimeErrorInterceptor = beforeReturnRuntimeError
     }
@@ -97,10 +117,10 @@ export default class FW extends Router {
     this._use(printReq || printRequest)
 
     // 做一些默认操作
-    this._use(defaultOperate)
+    this._use(defaultOperate.bind(this, { contentEncoding: this.contentEncoding }))
 
     // 构造函数
-    this._use(afterRequestCallback)
+    this._use(typeof v1 === 'function' ? v1 : afterRequest)
 
     // 包装request
     this._use(wrapperRequest)
@@ -119,7 +139,7 @@ export default class FW extends Router {
     this.server = http.createServer(this.callback() as any)
   }
 
-  public addController(controllers:any|any[]) {
+  public addController(controllers: any | any[]) {
     controllers = [controllers].flat()
     for (const controller of controllers) {
       const constructor = controller?.name ? controller : controller.__proto__.constructor
@@ -145,7 +165,7 @@ export default class FW extends Router {
     this.middleWares.unshift(addInterceptor(() => middleware))
   }
 
-  public listen(port?:number, hostname?:string, callback?: () => void): void {
+  public listen(port?: number, hostname?: string, callback?: () => void): void {
     port = port || PORT
     hostname = hostname || HOSTNAME
     this.server.listen(port, hostname, callback)

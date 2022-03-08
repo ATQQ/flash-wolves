@@ -1,14 +1,15 @@
 import nodeUrl from 'url'
 import qs from 'querystring'
 import { ServerOptions } from 'http'
+import { brotliCompressSync, deflateSync, gzipSync } from 'zlib'
 import {
-  FWRequest, FWResponse, Route, CodeMsg,
+  FWRequest, FWResponse, Route, CodeMsg, AppResponseCompressType,
 } from '../../types'
 
 enum ContentType {
-    formData = 'application/x-www-form-urlencoded',
-    jsonData = 'application/json',
-    multipart = 'multipart/form-data'
+  formData = 'application/x-www-form-urlencoded',
+  jsonData = 'application/json',
+  multipart = 'multipart/form-data'
 }
 
 /**
@@ -34,21 +35,35 @@ function Result(code: number, errMsg: string, data?: unknown) {
   this.msg = errMsg
 }
 
+const compressFn = {
+  br: brotliCompressSync,
+  gzip: gzipSync,
+  deflate: deflateSync,
+}
+
 export function expandHttpRespPrototype(http: ServerOptions): void {
   const resp: any = http.ServerResponse.prototype
   resp.notFound = function notFound() {
-    this.statusCode = 404
-    // this.setHeader('Content-Type', 'text/html;charset=utf-8')
-    // this.end('<h1>url not found</h1>')
-    this.end(JSON.stringify({
+    const _this:FWResponse = this
+    _this.statusCode = 404
+    _this.end(JSON.stringify({
       code: 404,
       msg: 'not found',
     }))
   }
 
   resp.json = function json(data) {
+    const _this:FWResponse = this
     if (!resp.writableEnded) {
-      this.end(JSON.stringify(data))
+      const v = JSON.stringify(data)
+      // 压缩数据
+      if (_this.contentEncoding) {
+        _this.setHeader('Content-Encoding', _this.contentEncoding)
+        _this.end(compressFn[_this.contentEncoding](Buffer.from(v)))
+        return
+      }
+
+      _this.end(v)
     }
   }
 
@@ -75,35 +90,35 @@ const methodMap = {
 
 // TODO:实现返回数据预览
 export class Response {
-  static notFound():unknown {
+  static notFound(): unknown {
     return {
       'fw-type': methodMap['fw-404'],
       data: [],
     }
   }
 
-  static json(data:unknown):unknown {
+  static json(data: unknown): unknown {
     return {
       type: methodMap['fw-json'],
       data: [data],
     }
   }
 
-  static success(data:unknown):unknown {
+  static success(data: unknown): unknown {
     return {
       type: methodMap['fw-success'],
       data: [data],
     }
   }
 
-  static fail(code:number, msg:string, data?: unknown):unknown {
+  static fail(code: number, msg: string, data?: unknown): unknown {
     return {
       type: methodMap['fw-fail'],
       data: [code, msg, data],
     }
   }
 
-  static failWithError(err:CodeMsg):unknown {
+  static failWithError(err: CodeMsg): unknown {
     return {
       type: methodMap['fw-failWithError'],
       data: [err],
@@ -134,9 +149,22 @@ export async function runRoute(req: FWRequest, res: FWResponse) {
   return result
 }
 
-export function defaultOperate(_req: FWRequest, res: FWResponse) {
-  res.setHeader('Content-Type', 'application/json;charset=utf-8')
+interface DefaultOptions {
+  contentEncoding: AppResponseCompressType[]
 }
+
+export function defaultOperate(options: DefaultOptions, req: FWRequest, res: FWResponse) {
+  res.setHeader('Content-Type', 'application/json;charset=utf-8')
+
+  // 记录压缩内容
+  const acceptEncoding = req.headers['accept-encoding'] as string
+  const allowEncoding = acceptEncoding.match(/(br|deflate|gzip)/g) || []
+  const compressType = options.contentEncoding.find((v) => allowEncoding.includes(v))
+  if (compressType) {
+    res.contentEncoding = compressType
+  }
+}
+
 function _matchRoute(routes: Route[], req: FWRequest): Route {
   const { method: reqMethod, url: reqPath } = req
   const route = routes.find((route) => {

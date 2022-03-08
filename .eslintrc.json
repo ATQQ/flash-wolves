@@ -1,17 +1,21 @@
 {
     "root": true,
     "overrides": [
-      {
-        "files": ["*.js"]
-      },
-      {
-        "files": ["*.ts"],
-        "parser": "@typescript-eslint/parser",
-        "parserOptions": {
-            "ecmaVersion": 12,
-            "sourceType": "module"
+        {
+            "files": [
+                "*.js"
+            ]
+        },
+        {
+            "files": [
+                "*.ts"
+            ],
+            "parser": "@typescript-eslint/parser",
+            "parserOptions": {
+                "ecmaVersion": 12,
+                "sourceType": "module"
+            }
         }
-      }
     ],
     "env": {
         "node": true,
@@ -29,17 +33,17 @@
             "off"
         ],
         "@typescript-eslint/explicit-module-boundary-types": "off",
-        "import/no-unresolved":"off",
-        "import/extensions":"off",
-        "no-unused-vars":"off",
-        "no-shadow":"off",
-        "no-restricted-syntax":"off",
-        "no-await-in-loop":"off",
-        "no-underscore-dangle":"off",
-        "no-param-reassign":"off",
-        "no-use-before-define":"off",
-        "no-proto":"off",
-        "class-methods-use-this":"off",
+        "import/no-unresolved": "off",
+        "import/extensions": "off",
+        "no-unused-vars": "off",
+        "no-shadow": "off",
+        "no-restricted-syntax": "off",
+        "no-await-in-loop": "off",
+        "no-underscore-dangle": "off",
+        "no-param-reassign": "off",
+        "no-use-before-define": "off",
+        "no-proto": "off",
+        "class-methods-use-this": "off",
         "todo-ddl/diy": [
             "warn"
         ],
@@ -51,6 +55,6 @@
             "warn",
             "never"
         ],
-        "no-console":"off"
+        "no-console": "off"
     }
 }
