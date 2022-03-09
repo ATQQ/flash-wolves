@@ -1,5 +1,3 @@
-import nodeUrl from 'url'
-import qs from 'querystring'
 import { ServerOptions } from 'http'
 import { brotliCompressSync, deflateSync, gzipSync } from 'zlib'
 import {
@@ -16,9 +14,26 @@ enum ContentType {
  * 打印请求信息
  */
 export function printRequest(req: FWRequest): void {
-  const { method, url } = req
-  const urlInfo = nodeUrl.parse(url)
-  console.log(`${method} ${urlInfo.pathname}`)
+  const { method } = req
+  const url = getUrlInfo(req)
+
+  console.log(`${getClientIp(req)} ${method} ${url.pathname} ${getReferer(req)} ${getUA(req)}`)
+}
+
+export function getUrlInfo(req:FWRequest) {
+  return new URL(req.url, `http://${req.headers.host || 'localhost'}`)
+}
+
+export function getClientIp(req: FWRequest): string {
+  return (req.headers['x-forwarded-for'] || req.connection.remoteAddress || req.socket.remoteAddress) as string
+}
+
+export function getReferer(req:FWRequest) {
+  return req.headers.referer || req.headers.host || ''
+}
+
+export function getUA(req:FWRequest) {
+  return req.headers['user-agent']
 }
 
 export async function wrapperRequest(req: FWRequest): Promise<void> {
@@ -158,7 +173,7 @@ export function defaultOperate(options: DefaultOptions, req: FWRequest, res: FWR
 
   // 记录压缩内容
   const acceptEncoding = req.headers['accept-encoding'] as string
-  const allowEncoding = acceptEncoding.match(/(br|deflate|gzip)/g) || []
+  const allowEncoding = acceptEncoding?.match(/(br|deflate|gzip)/g) || []
   const compressType = options.contentEncoding.find((v) => allowEncoding.includes(v))
   if (compressType) {
     res.contentEncoding = compressType
@@ -174,7 +189,7 @@ function _matchRoute(routes: Route[], req: FWRequest): Route {
       return false
     }
 
-    const { params, ok } = matchReqPath(path, nodeUrl.parse(reqPath).pathname)
+    const { params, ok } = matchReqPath(path, getUrlInfo(req).pathname)
     if (ok) {
       req.params = params
     }
@@ -219,8 +234,8 @@ function matchReqPath(path: string, reqPath: string) {
  * 获取url参数
  */
 function requestQuery(req: FWRequest): void {
-  const { query } = nodeUrl.parse(req.url)
-  Object.assign(req, { query: qs.parse(query) })
+  const url = getUrlInfo(req)
+  Object.assign(req, { query: Object.fromEntries(url.searchParams.entries()) })
 }
 
 /**
@@ -240,7 +255,10 @@ function getBodyContent(req: FWRequest) {
       try {
         switch (true) {
           case contentType.includes(ContentType.formData):
-            data = qs.parse(buffer.toString('utf-8') || '{}')
+            data = Object.fromEntries(new URL(
+              `?${buffer.toString('utf-8')}`,
+              'http://localhost',
+            ).searchParams.entries())
             break
           case contentType.includes(ContentType.jsonData):
             data = JSON.parse(buffer.toString('utf-8') || '{}')
