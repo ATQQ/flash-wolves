@@ -1,23 +1,39 @@
-import nodeUrl from 'url'
-import qs from 'querystring'
 import { ServerOptions } from 'http'
+import { brotliCompressSync, deflateSync, gzipSync } from 'zlib'
 import {
-  FWRequest, FWResponse, Route, CodeMsg,
+  FWRequest, FWResponse, Route, CodeMsg, AppResponseCompressType,
 } from '../../types'
 
 enum ContentType {
-    formData = 'application/x-www-form-urlencoded',
-    jsonData = 'application/json',
-    multipart = 'multipart/form-data'
+  formData = 'application/x-www-form-urlencoded',
+  jsonData = 'application/json',
+  multipart = 'multipart/form-data'
 }
 
 /**
  * 打印请求信息
  */
 export function printRequest(req: FWRequest): void {
-  const { method, url } = req
-  const urlInfo = nodeUrl.parse(url)
-  console.log(`${method} ${urlInfo.pathname}`)
+  const { method } = req
+  const url = getUrlInfo(req)
+
+  console.log(`${getClientIp(req)} ${method} ${url.pathname} ${getReferer(req)} ${getUA(req)}`)
+}
+
+export function getUrlInfo(req:FWRequest) {
+  return new URL(req.url, `http://${req.headers.host || 'localhost'}`)
+}
+
+export function getClientIp(req: FWRequest): string {
+  return (req.headers['x-forwarded-for'] || req.connection.remoteAddress || req.socket.remoteAddress) as string
+}
+
+export function getReferer(req:FWRequest) {
+  return req.headers.referer || req.headers.host || ''
+}
+
+export function getUA(req:FWRequest) {
+  return req.headers['user-agent']
 }
 
 export async function wrapperRequest(req: FWRequest): Promise<void> {
@@ -34,21 +50,35 @@ function Result(code: number, errMsg: string, data?: unknown) {
   this.msg = errMsg
 }
 
+const compressFn = {
+  br: brotliCompressSync,
+  gzip: gzipSync,
+  deflate: deflateSync,
+}
+
 export function expandHttpRespPrototype(http: ServerOptions): void {
   const resp: any = http.ServerResponse.prototype
   resp.notFound = function notFound() {
-    this.statusCode = 404
-    // this.setHeader('Content-Type', 'text/html;charset=utf-8')
-    // this.end('<h1>url not found</h1>')
-    this.end(JSON.stringify({
+    const _this:FWResponse = this
+    _this.statusCode = 404
+    _this.end(JSON.stringify({
       code: 404,
       msg: 'not found',
     }))
   }
 
   resp.json = function json(data) {
+    const _this:FWResponse = this
     if (!resp.writableEnded) {
-      this.end(JSON.stringify(data))
+      const v = JSON.stringify(data)
+      // 压缩数据
+      if (_this.contentEncoding) {
+        _this.setHeader('Content-Encoding', _this.contentEncoding)
+        _this.end(compressFn[_this.contentEncoding](Buffer.from(v)))
+        return
+      }
+
+      _this.end(v)
     }
   }
 
@@ -75,35 +105,35 @@ const methodMap = {
 
 // TODO:实现返回数据预览
 export class Response {
-  static notFound():unknown {
+  static notFound(): unknown {
     return {
       'fw-type': methodMap['fw-404'],
       data: [],
     }
   }
 
-  static json(data:unknown):unknown {
+  static json(data: unknown): unknown {
     return {
       type: methodMap['fw-json'],
       data: [data],
     }
   }
 
-  static success(data:unknown):unknown {
+  static success(data: unknown): unknown {
     return {
       type: methodMap['fw-success'],
       data: [data],
     }
   }
 
-  static fail(code:number, msg:string, data?: unknown):unknown {
+  static fail(code: number, msg: string, data?: unknown): unknown {
     return {
       type: methodMap['fw-fail'],
       data: [code, msg, data],
     }
   }
 
-  static failWithError(err:CodeMsg):unknown {
+  static failWithError(err: CodeMsg): unknown {
     return {
       type: methodMap['fw-failWithError'],
       data: [err],
@@ -134,9 +164,22 @@ export async function runRoute(req: FWRequest, res: FWResponse) {
   return result
 }
 
-export function defaultOperate(_req: FWRequest, res: FWResponse) {
-  res.setHeader('Content-Type', 'application/json;charset=utf-8')
+interface DefaultOptions {
+  contentEncoding: AppResponseCompressType[]
 }
+
+export function defaultOperate(options: DefaultOptions, req: FWRequest, res: FWResponse) {
+  res.setHeader('Content-Type', 'application/json;charset=utf-8')
+
+  // 记录压缩内容
+  const acceptEncoding = req.headers['accept-encoding'] as string
+  const allowEncoding = acceptEncoding?.match(/(br|deflate|gzip)/g) || []
+  const compressType = options.contentEncoding.find((v) => allowEncoding.includes(v))
+  if (compressType) {
+    res.contentEncoding = compressType
+  }
+}
+
 function _matchRoute(routes: Route[], req: FWRequest): Route {
   const { method: reqMethod, url: reqPath } = req
   const route = routes.find((route) => {
@@ -146,7 +189,7 @@ function _matchRoute(routes: Route[], req: FWRequest): Route {
       return false
     }
 
-    const { params, ok } = matchReqPath(path, nodeUrl.parse(reqPath).pathname)
+    const { params, ok } = matchReqPath(path, getUrlInfo(req).pathname)
     if (ok) {
       req.params = params
     }
@@ -191,8 +234,8 @@ function matchReqPath(path: string, reqPath: string) {
  * 获取url参数
  */
 function requestQuery(req: FWRequest): void {
-  const { query } = nodeUrl.parse(req.url)
-  Object.assign(req, { query: qs.parse(query) })
+  const url = getUrlInfo(req)
+  Object.assign(req, { query: Object.fromEntries(url.searchParams.entries()) })
 }
 
 /**
@@ -212,7 +255,10 @@ function getBodyContent(req: FWRequest) {
       try {
         switch (true) {
           case contentType.includes(ContentType.formData):
-            data = qs.parse(buffer.toString('utf-8') || '{}')
+            data = Object.fromEntries(new URL(
+              `?${buffer.toString('utf-8')}`,
+              'http://localhost',
+            ).searchParams.entries())
             break
           case contentType.includes(ContentType.jsonData):
             data = JSON.parse(buffer.toString('utf-8') || '{}')

@@ -24,6 +24,7 @@ export interface SuperResponse {
     success: reqSuccess
     fail: reqFail
     failWithError: failWithError
+    contentEncoding?: AppResponseCompressType
 }
 
 export interface FWRequest extends IncomingMessage, SuperRequest { }
@@ -44,27 +45,39 @@ export interface Route {
 }
 
 export type Controller = (path: string, callback: Callback, options?: any) => void
-export type RuntimeErrorInterceptor = (req: FWRequest, res: FWResponse, err:Error)=>void
+export type RuntimeErrorInterceptor = (req: FWRequest, res: FWResponse, err: Error) => void
 
-export interface FWInterceptors{
+export type AppResponseCompressType = 'gzip' | 'deflate' | 'br'
+
+export interface AppOptions {
     /**
      * 打印Request获取到的是原生的HttpRequest
      */
-    printReq?:(req:FWRequest)=>void
+    printReq?: (req: FWRequest) => void
+    /**
+     * 请求回掉 获取到的是原生的req与res
+     */
+    afterRequest?:Middleware
     /**
      * 执行路由匹配前，获取到的是包装后的req与res
      */
-    beforeMathRoute?:Middleware
+    beforeMathRoute?: Middleware
     /**
      * 执行路由内部逻辑之前
      */
-    beforeRunRoute?:Middleware
+    beforeRunRoute?: Middleware
     /**
      * 捕获运行错误，返回错误信息之前
      */
-    beforeReturnRuntimeError?:RuntimeErrorInterceptor
+    beforeReturnRuntimeError?: RuntimeErrorInterceptor
     /**
      * 处理运行时捕获的错误
      */
-    catchRuntimeError?:RuntimeErrorInterceptor
+    catchRuntimeError?: RuntimeErrorInterceptor
+
+    /**
+     * 数据压缩格式
+     * @default 'gzip''
+     */
+    compress?: AppResponseCompressType | AppResponseCompressType[] | boolean
 }
