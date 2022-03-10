@@ -99,6 +99,12 @@ class User {
       console.log(query, params)
       return query
     }
+
+    @Post('login')
+    login(@ReqBody body) {
+      console.log(body)
+      return body
+    }
 }
 
 app.addController(User)
@@ -109,7 +115,6 @@ app.addController(User)
 // app.addController(new User())
 
 app.listen(3000)
-
 ```
 * [ts-node](https://www.npmjs.com/package/ts-node) usage documentation
 * [esno](https://www.npmjs.com/package/esno) usage documentation
@@ -131,7 +136,10 @@ see [packages/examples](./packages/examples)
 
 # Planning
 * [x] All basic operations of Router are plugged into the decorator
-* [ ] Improve the usage documentation (VitePress)
 * [x] Direct return content 
+* [ ] Improve the usage documentation (VitePress)
 * [ ] Add res.xxx methods (like res.html(str))
+* [ ] Support static sources
+* [ ] Template project
+* [ ] Auto API
 * [ ] . Stay tuned!

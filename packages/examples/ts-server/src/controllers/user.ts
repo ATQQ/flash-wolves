@@ -1,5 +1,5 @@
 import {
-  RouterController, Get, ReqQuery, ReqParams,
+  RouterController, Get, ReqQuery, ReqParams, Post, ReqBody,
 } from 'flash-wolves'
 
 @RouterController('user')
@@ -8,5 +8,11 @@ export default class User {
   getUserInfo(@ReqQuery query, @ReqParams params) {
     console.log(query, params)
     return query
+  }
+
+  @Post('login')
+  login(@ReqBody body) {
+    console.log(body)
+    return body
   }
 }
