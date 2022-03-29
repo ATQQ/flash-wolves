@@ -6,6 +6,8 @@ export { default as Router } from './router'
 
 export { Response } from './server/middleware'
 
+export * from './utils'
+
 export * from './decorators'
 
 export * from './types'

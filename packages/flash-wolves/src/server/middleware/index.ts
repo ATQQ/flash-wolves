@@ -2,7 +2,7 @@ import { ServerOptions } from 'http'
 import { brotliCompressSync, deflateSync, gzipSync } from 'zlib'
 import {
   FWRequest, FWResponse, Route, CodeMsg, AppResponseCompressType,
-} from '../../types'
+} from '@/types'
 
 enum ContentType {
   formData = 'application/x-www-form-urlencoded',

@@ -1,4 +1,4 @@
-import type { Method, FWRequest, FWResponse } from '../types'
+import type { Method, FWRequest, FWResponse } from '@/types'
 
 export function RouterController(prefix = '') {
   return function routerDecorators(target) {

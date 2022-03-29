@@ -45,7 +45,10 @@ importers:
       flash-wolves: link:../../flash-wolves
 
   packages/flash-wolves:
-    specifiers: {}
+    specifiers:
+      dotenv: ^16.0.0
+    dependencies:
+      dotenv: 16.0.0
 
 packages:
 
@@ -629,6 +632,11 @@ packages:
     dependencies:
       is-obj: 2.0.0
     dev: true
+
+  /dotenv/16.0.0:
+    resolution: {integrity: sha512-qD9WU0MPM4SWLPJy/r2Be+2WgQj8plChsyrCNQzW/0WjvcJQiKQJ9mH3ZgB3fxbUUxgc/11ZJ0Fi5KiimWGz2Q==}
+    engines: {node: '>=12'}
+    dev: false
 
   /duplexer3/0.1.4:
     resolution: {integrity: sha512-CEj8FwwNA4cVH2uFCoHUrmojhYh1vmCdOaneKJXwkeY1i9jnlslVo9dx+hQ5Hl9GnH/Bwy/IjxAyOePyPKYnzA==}

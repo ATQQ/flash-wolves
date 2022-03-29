@@ -81,3 +81,7 @@ export interface AppOptions {
      */
     compress?: AppResponseCompressType | AppResponseCompressType[] | boolean
 }
+
+export type Record<K extends keyof any, T> = {
+    [P in K]: T;
+};

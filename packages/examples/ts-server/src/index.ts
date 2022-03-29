@@ -7,4 +7,4 @@ app.addController(User)
 
 console.log(app.routes)
 
-app.listen(3000)
+app.listen(+process.env.SERVER_PORT)
