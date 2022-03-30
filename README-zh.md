@@ -131,6 +131,7 @@ ts-node index.ts
 # 规划
 * [x] Router的所有基本操作都接入装饰器
 * [x] 直接返回的内容 
+* [x] 自动化读取.env中所有的环境变量 
 * [ ] 完善使用文档（VitePress）
 * [ ] 添加res.xxx方法 (如res.html(str))
 * [ ] 支持指定静态资源目录挂载

@@ -137,6 +137,7 @@ see [packages/examples](./packages/examples)
 # Planning
 * [x] All basic operations of Router are plugged into the decorator
 * [x] Direct return content 
+* [x] auto load `.env` files 
 * [ ] Improve the usage documentation (VitePress)
 * [ ] Add res.xxx methods (like res.html(str))
 * [ ] Support static sources
