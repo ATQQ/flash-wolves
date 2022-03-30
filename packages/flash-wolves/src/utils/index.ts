@@ -23,8 +23,7 @@ const defaultOptions: Options = {
 // eslint-disable-next-line import/prefer-default-export
 export function loadEnv(options?: Options): Record<string, string> {
   // 设置默认值
-  options = options || {}
-  Object.assign(options, defaultOptions, options)
+  options = { ...defaultOptions, ...(options || {}) }
   const {
     mode, envDir, prefix, ignoreProcessEnv,
   } = options
@@ -44,6 +43,7 @@ export function loadEnv(options?: Options): Record<string, string> {
     /** local file */ '.env.local',
     /** default file */ '.env',
   ]
+  console.log(envFiles)
 
   for (const key in process.env) {
     if (key.startsWith(prefix) && env[key] === undefined) {
