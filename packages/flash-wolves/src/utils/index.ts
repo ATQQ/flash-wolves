@@ -43,7 +43,6 @@ export function loadEnv(options?: Options): Record<string, string> {
     /** local file */ '.env.local',
     /** default file */ '.env',
   ]
-  console.log(envFiles)
 
   for (const key in process.env) {
     if (key.startsWith(prefix) && env[key] === undefined) {
