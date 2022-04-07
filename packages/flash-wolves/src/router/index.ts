@@ -3,7 +3,7 @@
 import { join } from 'path'
 import type {
   Callback, Method, Route, Controller,
-} from '../types'
+} from '@/types'
 
 class Router {
   private _prefix: string

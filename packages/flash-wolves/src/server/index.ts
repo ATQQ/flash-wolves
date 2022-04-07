@@ -4,18 +4,26 @@ import { join } from 'path'
 import {
   RuntimeErrorInterceptor,
   FWRequest, FWResponse, Middleware, MiddlewarePosition, AppOptions, AppResponseCompressType,
-} from '../types'
+} from '@/types'
 
 // router
-import Router from '../router'
+import Router from '@/router'
 
 // 自带中间件
 import {
   defaultOperate, expandHttpRespPrototype, matchRoute, runRoute, printRequest, wrapperRequest,
 } from './middleware'
+import { loadEnv } from '@/utils'
 
 const PORT = 3000
 const HOSTNAME = 'localhost'
+// 加载环境变量
+const MODE = process.env.NODE_ENV || 'development'
+const ENV_DIR = process.cwd()
+loadEnv({
+  mode: MODE,
+  envDir: ENV_DIR,
+})
 
 // 拓展httpResponse的原型
 expandHttpRespPrototype(http)
@@ -28,7 +36,6 @@ function addInterceptor(interceptorFun: () => Middleware) {
     }
   }
 }
-
 export default class FW extends Router {
   private server: http.Server
 

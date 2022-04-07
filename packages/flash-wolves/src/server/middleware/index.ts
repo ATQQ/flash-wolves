@@ -2,7 +2,7 @@ import { ServerOptions } from 'http'
 import { brotliCompressSync, deflateSync, gzipSync } from 'zlib'
 import {
   FWRequest, FWResponse, Route, CodeMsg, AppResponseCompressType,
-} from '../../types'
+} from '@/types'
 
 enum ContentType {
   formData = 'application/x-www-form-urlencoded',
@@ -17,7 +17,14 @@ export function printRequest(req: FWRequest): void {
   const { method } = req
   const url = getUrlInfo(req)
 
-  console.log(`${getClientIp(req)} ${method} ${url.pathname} ${getReferer(req)} ${getUA(req)}`)
+  console.log(
+    new Date().toLocaleString(),
+    getClientIp(req),
+    method,
+    url.pathname,
+    getReferer(req),
+    getUA(req),
+  )
 }
 
 export function getUrlInfo(req:FWRequest) {
