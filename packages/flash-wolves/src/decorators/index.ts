@@ -10,7 +10,7 @@ export function RouterController(prefix = '') {
  * 获取HTTP Request 上的指定键的值
  * @param key 键名
  */
-export function RequestValue(key:keyof FWRequest) {
+export function RequestValue(key:string) {
   return function requestParamDecorators(target, fnName:string, paramIdx:number) {
     // 初始化一个Map 存储映射数据 reqKey => fnNameWithParamIdxArr
     // 挂在构造函数上
@@ -41,20 +41,35 @@ export function RequestValue(key:keyof FWRequest) {
   //   'body':{
   //     'sayHello':[0],
   //     'test2':[0,1]
-  //   }
+  //   },
+  //   'key':{fnName:[paramNumber]}
   // }
 }
-
-export function ReqQuery(target, name, idx) {
-  return RequestValue('query')(target, name, idx)
+/**
+ * 获取HTTP Request Query上指定键的值
+ * @param key
+ */
+export function ReqQuery(key?:string) {
+  const base = 'query'
+  return RequestValue(key ? `${base}.${key}` : base)
 }
 
-export function ReqBody(target, name, idx) {
-  return RequestValue('body')(target, name, idx)
+/**
+ * 获取HTTP Request Body上的指定键的值
+ * @param key
+ */
+export function ReqBody(key?:string) {
+  const base = 'body'
+  return RequestValue(key ? `${base}.${key}` : base)
 }
 
-export function ReqParams(target, name, idx) {
-  return RequestValue('params')(target, name, idx)
+/**
+ * 获取指定路由参数
+ * @param key
+ */
+export function ReqParams(key?:string) {
+  const base = 'params'
+  return RequestValue(key ? `${base}.${key}` : base)
 }
 
 export function RouteMapping(method: Method, path: string, options?: any) {
@@ -81,7 +96,8 @@ export function RouteMapping(method: Method, path: string, options?: any) {
         const argv = Array.from({ length: fn.length })
         // 修改参数
         for (const [param, fnNameWithIndx] of requestParamsMap.entries()) {
-          const value = req[param]
+          const pPaths = param.split('.')
+          const value = pPaths.reduce((pre, p) => pre?.[p], req) ?? null
           const pIdxArr = fnNameWithIndx[fn.name] || []
           for (const idx of pIdxArr) {
             argv[idx] = value
