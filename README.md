@@ -139,13 +139,14 @@ node dist/index.js
 ## More Example
 see [packages/examples](./packages/examples)
 
+see [node-server](https://github.com/atqq/node-server) get the template project
 # Planning
 * [x] All basic operations of Router are plugged into the decorator
 * [x] Direct return content 
 * [x] auto load `.env` files 
+* [x] Template project
 * [ ] Improve the usage documentation (VitePress)
 * [ ] Add res.xxx methods (like res.html(str))
 * [ ] Support static sources
-* [ ] Template project
 * [ ] Auto API
 * [ ] . Stay tuned!
