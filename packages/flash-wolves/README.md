@@ -95,13 +95,18 @@ class User {
     }
     
     @Get('info/:id', { power: 'ok' })
-    getUserInfo(@ReqQuery query, @ReqParams params) {
-      console.log(query, params)
+    getUserInfo(@ReqParams() params, @ReqParams('id') id:string) {
+      console.log(params,id)
+      return params
+    }
+
+    check(@ReqQuery() query, @ReqQuery('search') search:string){
+      console.log(query, search)
       return query
     }
 
     @Post('login')
-    login(@ReqBody body) {
+    login(@ReqBody() body) {
       console.log(body)
       return body
     }
@@ -112,7 +117,7 @@ app.addController(User)
 // app.addController([User,Task])
 // or 
 // if constructor have some params
-// app.addController(new User())
+// app.addController(new User(...params))
 
 app.listen(3000)
 ```

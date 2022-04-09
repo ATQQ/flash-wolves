@@ -95,25 +95,29 @@ class User {
     }
     
     @Get('info/:id', { power: 'ok' })
-    getUserInfo(@ReqQuery query, @ReqParams params) {
-      console.log(query, params)
+    getUserInfo(@ReqParams() params, @ReqParams('id') id:string) {
+      console.log(params,id)
+      return params
+    }
+
+    check(@ReqQuery() query, @ReqQuery('search') search:string){
+      console.log(query, search)
       return query
     }
 
     @Post('login')
-    login(@ReqBody body) {
+    login(@ReqBody() body) {
       console.log(body)
       return body
     }
 }
 
 app.addController(User)
-
-// 支持传递数组
+// support array
 // app.addController([User,Task])
 // or 
-// 支持构造函数实例化
-// app.addController(new User())
+// if constructor have some params
+// app.addController(new User(...params))
 
 app.listen(3000)
 
