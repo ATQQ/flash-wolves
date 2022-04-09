@@ -1,6 +1,6 @@
 {
   "name": "flash-wolves",
-  "version": "0.2.2-beta.0",
+  "version": "0.2.2",
   "license": "MIT",
   "description": "a simple & flexible & fast web framework",
   "author": {
