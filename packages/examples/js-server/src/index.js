@@ -1,4 +1,5 @@
-const { App, Router } = require('flash-wolves')
+const { App } = require('flash-wolves')
+const routes = require('./routes')
 
 const app = new App()
 
@@ -7,14 +8,7 @@ app.get('/hello/world', (req, res) => {
   res.success()
 })
 
-const userRouter = new Router('user')
-
-userRouter.post('login', (req, res) => {
-  console.log(req.body)
-  res.success()
-})
-
-app.addRouter(userRouter)
+app.addRouter(routes)
 
 console.log(app.routes)
 app.listen(3001)

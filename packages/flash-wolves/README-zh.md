@@ -95,25 +95,29 @@ class User {
     }
     
     @Get('info/:id', { power: 'ok' })
-    getUserInfo(@ReqQuery query, @ReqParams params) {
-      console.log(query, params)
+    getUserInfo(@ReqParams() params, @ReqParams('id') id:string) {
+      console.log(params,id)
+      return params
+    }
+
+    check(@ReqQuery() query, @ReqQuery('search') search:string){
+      console.log(query, search)
       return query
     }
 
     @Post('login')
-    login(@ReqBody body) {
+    login(@ReqBody() body) {
       console.log(body)
       return body
     }
 }
 
 app.addController(User)
-
-// 支持传递数组
+// support array
 // app.addController([User,Task])
 // or 
-// 支持构造函数实例化
-// app.addController(new User())
+// if constructor have some params
+// app.addController(new User(...params))
 
 app.listen(3000)
 
@@ -128,13 +132,15 @@ ts-node index.ts
 ## 更多示例
 查看 [packages/examples](./packages/examples)
 
+访问 [node-server](https://github.com/atqq/node-server) 获取模板工程
+
 # 规划
 * [x] Router的所有基本操作都接入装饰器
 * [x] 直接返回的内容 
 * [x] 自动化读取.env中所有的环境变量 
+* [x] 模板工程
 * [ ] 完善使用文档（VitePress）
 * [ ] 添加res.xxx方法 (如res.html(str))
 * [ ] 支持指定静态资源目录挂载
-* [ ] 模板工程
 * [ ] 自动生成API文档
 * [ ] 。。。敬请期待

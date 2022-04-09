@@ -95,13 +95,18 @@ class User {
     }
     
     @Get('info/:id', { power: 'ok' })
-    getUserInfo(@ReqQuery query, @ReqParams params) {
-      console.log(query, params)
+    getUserInfo(@ReqParams() params, @ReqParams('id') id:string) {
+      console.log(params,id)
+      return params
+    }
+
+    check(@ReqQuery() query, @ReqQuery('search') search:string){
+      console.log(query, search)
       return query
     }
 
     @Post('login')
-    login(@ReqBody body) {
+    login(@ReqBody() body) {
       console.log(body)
       return body
     }
@@ -112,7 +117,7 @@ app.addController(User)
 // app.addController([User,Task])
 // or 
 // if constructor have some params
-// app.addController(new User())
+// app.addController(new User(...params))
 
 app.listen(3000)
 ```
@@ -134,13 +139,14 @@ node dist/index.js
 ## More Example
 see [packages/examples](./packages/examples)
 
+see [node-server](https://github.com/atqq/node-server) get the template project
 # Planning
 * [x] All basic operations of Router are plugged into the decorator
 * [x] Direct return content 
 * [x] auto load `.env` files 
+* [x] Template project
 * [ ] Improve the usage documentation (VitePress)
 * [ ] Add res.xxx methods (like res.html(str))
 * [ ] Support static sources
-* [ ] Template project
 * [ ] Auto API
 * [ ] . Stay tuned!
