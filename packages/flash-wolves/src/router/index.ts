@@ -1,9 +1,7 @@
 /* eslint-disable global-require */
 /* eslint-disable import/no-dynamic-require */
 import { join } from 'path'
-import type {
-  Callback, Method, Route, Controller,
-} from '@/types'
+import type { Callback, Method, Route, Controller } from '@/types'
 
 class Router {
   private _prefix: string
@@ -19,10 +17,18 @@ class Router {
     this._routes = []
   }
 
-  public registerRoute(method: Method, path: string, callback: Callback, options?: unknown) {
+  public registerRoute(
+    method: Method,
+    path: string,
+    callback: Callback,
+    options?: unknown
+  ) {
     if (options) {
       this.addRoute({
-        method, path: join(this._prefix, path), callback, options,
+        method,
+        path: join(this._prefix, path),
+        callback,
+        options
       })
       return
     }
@@ -39,8 +45,8 @@ class Router {
     }
   }
 
-  public addRouter(router:Router|Router[]) {
-    [router].flat().forEach((r) => {
+  public addRouter(router: Router | Router[]) {
+    ;[router].flat().forEach((r) => {
       this.addRoutes(r.getRoutes())
     })
   }

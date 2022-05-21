@@ -1,7 +1,11 @@
 import { ServerOptions } from 'http'
 import { brotliCompressSync, deflateSync, gzipSync } from 'zlib'
 import {
-  FWRequest, FWResponse, Route, CodeMsg, AppResponseCompressType,
+  FWRequest,
+  FWResponse,
+  Route,
+  CodeMsg,
+  AppResponseCompressType
 } from '@/types'
 
 enum ContentType {
@@ -23,23 +27,25 @@ export function printRequest(req: FWRequest): void {
     method,
     url.pathname,
     getReferer(req),
-    getUA(req),
+    getUA(req)
   )
 }
 
-export function getUrlInfo(req:FWRequest) {
+export function getUrlInfo(req: FWRequest) {
   return new URL(req.url, `http://${req.headers.host || 'localhost'}`)
 }
 
 export function getClientIp(req: FWRequest): string {
-  return (req.headers['x-forwarded-for'] || req.connection.remoteAddress || req.socket.remoteAddress) as string
+  return (req.headers['x-forwarded-for'] ||
+    req.connection.remoteAddress ||
+    req.socket.remoteAddress) as string
 }
 
-export function getReferer(req:FWRequest) {
+export function getReferer(req: FWRequest) {
   return req.headers.referer || req.headers.host || ''
 }
 
-export function getUA(req:FWRequest) {
+export function getUA(req: FWRequest) {
   return req.headers['user-agent']
 }
 
@@ -60,22 +66,26 @@ function Result(code: number, errMsg: string, data?: unknown) {
 const compressFn = {
   br: brotliCompressSync,
   gzip: gzipSync,
-  deflate: deflateSync,
+  deflate: deflateSync
 }
 
 export function expandHttpRespPrototype(http: ServerOptions): void {
   const resp: any = http.ServerResponse.prototype
   resp.notFound = function notFound() {
-    const _this:FWResponse = this
+    // eslint-disable-next-line @typescript-eslint/no-this-alias
+    const _this: FWResponse = this
     _this.statusCode = 404
-    _this.end(JSON.stringify({
-      code: 404,
-      msg: 'not found',
-    }))
+    _this.end(
+      JSON.stringify({
+        code: 404,
+        msg: 'not found'
+      })
+    )
   }
 
   resp.json = function json(data) {
-    const _this:FWResponse = this
+    // eslint-disable-next-line @typescript-eslint/no-this-alias
+    const _this: FWResponse = this
     if (!resp.writableEnded) {
       const v = JSON.stringify(data)
       // 压缩数据
@@ -107,7 +117,7 @@ const methodMap = {
   'fw-json': 'json',
   'fw-success': 'success',
   'fw-fail': 'fail',
-  'fw-failWithError': 'failWithError',
+  'fw-failWithError': 'failWithError'
 }
 
 // TODO:实现返回数据预览
@@ -115,40 +125,44 @@ export class Response {
   static notFound(): unknown {
     return {
       'fw-type': methodMap['fw-404'],
-      data: [],
+      data: []
     }
   }
 
   static json(data: unknown): unknown {
     return {
       type: methodMap['fw-json'],
-      data: [data],
+      data: [data]
     }
   }
 
   static success(data: unknown): unknown {
     return {
       type: methodMap['fw-success'],
-      data: [data],
+      data: [data]
     }
   }
 
   static fail(code: number, msg: string, data?: unknown): unknown {
     return {
       type: methodMap['fw-fail'],
-      data: [code, msg, data],
+      data: [code, msg, data]
     }
   }
 
   static failWithError(err: CodeMsg): unknown {
     return {
       type: methodMap['fw-failWithError'],
-      data: [err],
+      data: [err]
     }
   }
 }
 
-export function matchRoute(routes: Route[], req: FWRequest, res: FWResponse): void {
+export function matchRoute(
+  routes: Route[],
+  req: FWRequest,
+  res: FWResponse
+): void {
   const route = _matchRoute(routes, req)
   // TODO: 改造成支持多路由next
   if (route) {
@@ -162,7 +176,11 @@ export async function runRoute(req: FWRequest, res: FWResponse) {
   const { callback } = req.route || {}
   const result = await (callback && callback(req, res))
   if (!res.writableEnded) {
-    if (typeof result === 'object' && result !== null && typeof res[result?.type] === 'function') {
+    if (
+      typeof result === 'object' &&
+      result !== null &&
+      typeof res[result?.type] === 'function'
+    ) {
       res[result?.type](...result.data)
       return result
     }
@@ -175,20 +193,26 @@ interface DefaultOptions {
   contentEncoding: AppResponseCompressType[]
 }
 
-export function defaultOperate(options: DefaultOptions, req: FWRequest, res: FWResponse) {
+export function defaultOperate(
+  options: DefaultOptions,
+  req: FWRequest,
+  res: FWResponse
+) {
   res.setHeader('Content-Type', 'application/json;charset=utf-8')
 
   // 记录压缩内容
   const acceptEncoding = req.headers['accept-encoding'] as string
   const allowEncoding = acceptEncoding?.match(/(br|deflate|gzip)/g) || []
-  const compressType = options.contentEncoding.find((v) => allowEncoding.includes(v))
+  const compressType = options.contentEncoding.find((v) =>
+    allowEncoding.includes(v)
+  )
   if (compressType) {
     res.contentEncoding = compressType
   }
 }
 
 function _matchRoute(routes: Route[], req: FWRequest): Route {
-  const { method: reqMethod, url: reqPath } = req
+  const { method: reqMethod } = req
   const route = routes.find((route) => {
     const { path, method } = route
     // 方法不匹配
@@ -233,7 +257,7 @@ function matchReqPath(path: string, reqPath: string) {
   }
   return {
     params,
-    ok,
+    ok
   }
 }
 
@@ -262,10 +286,12 @@ function getBodyContent(req: FWRequest) {
       try {
         switch (true) {
           case contentType.includes(ContentType.formData):
-            data = Object.fromEntries(new URL(
-              `?${buffer.toString('utf-8')}`,
-              'http://localhost',
-            ).searchParams.entries())
+            data = Object.fromEntries(
+              new URL(
+                `?${buffer.toString('utf-8')}`,
+                'http://localhost'
+              ).searchParams.entries()
+            )
             break
           case contentType.includes(ContentType.jsonData):
             data = JSON.parse(buffer.toString('utf-8') || '{}')

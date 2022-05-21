@@ -1,8 +1,19 @@
+import { MetaData } from '@/store'
 import type { Method, FWRequest, FWResponse } from '@/types'
+import { IClassData } from './type'
 
-export function RouterController(prefix = '') {
+export function RouterController(
+  prefix?: string,
+  routeCfg?: Record<string, any>
+) {
   return function routerDecorators(target) {
+    prefix = prefix || ''
     target._prefix = prefix
+    MetaData.set<IClassData>('class', target, {
+      prefix,
+      routeConfig: routeCfg,
+      routeMap: new Map()
+    })
   }
 }
 
@@ -10,8 +21,12 @@ export function RouterController(prefix = '') {
  * 获取HTTP Request 上的指定键的值
  * @param key 键名
  */
-export function RequestValue(key:string) {
-  return function requestParamDecorators(target, fnName:string, paramIdx:number) {
+export function RequestValue(key: string) {
+  return function requestParamDecorators(
+    target,
+    fnName: string,
+    paramIdx: number
+  ) {
     // 初始化一个Map 存储映射数据 reqKey => fnNameWithParamIdxArr
     // 挂在构造函数上
     if (!target.constructor.requestParamsMap) {
@@ -49,7 +64,7 @@ export function RequestValue(key:string) {
  * 获取HTTP Request Query上指定键的值
  * @param key
  */
-export function ReqQuery(key?:string) {
+export function ReqQuery(key?: string) {
   const base = 'query'
   return RequestValue(key ? `${base}.${key}` : base)
 }
@@ -58,7 +73,7 @@ export function ReqQuery(key?:string) {
  * 获取HTTP Request Body上的指定键的值
  * @param key
  */
-export function ReqBody(key?:string) {
+export function ReqBody(key?: string) {
   const base = 'body'
   return RequestValue(key ? `${base}.${key}` : base)
 }
@@ -67,7 +82,7 @@ export function ReqBody(key?:string) {
  * 获取指定路由参数
  * @param key
  */
-export function ReqParams(key?:string) {
+export function ReqParams(key?: string) {
   const base = 'params'
   return RequestValue(key ? `${base}.${key}` : base)
 }
@@ -92,7 +107,7 @@ export function RouteMapping(method: Method, path: string, options?: any) {
     target.constructor.routeMap.set(`${method}-${path}`, {
       method,
       path,
-      callback: (req:FWRequest, res:FWResponse) => {
+      callback: (req: FWRequest, res: FWResponse) => {
         const argv = Array.from({ length: fn.length })
         // 修改参数
         for (const [param, fnNameWithIndx] of requestParamsMap.entries()) {
@@ -118,7 +133,7 @@ export function RouteMapping(method: Method, path: string, options?: any) {
         // 执行原来的调用
         return fn.apply(target, argv)
       },
-      options,
+      options
     })
   }
 }
