@@ -4,7 +4,9 @@ import {
   ReqQuery,
   ReqParams,
   Post,
-  ReqBody
+  ReqBody,
+  FWResponse,
+  FWRequest
 } from 'flash-wolves'
 
 @RouterController('user', { power: 'ok' })
@@ -14,9 +16,12 @@ export default class User {
     @ReqQuery() query,
     @ReqParams() params,
     @ReqParams('id') id,
-    @ReqQuery('search') search: string
+    @ReqQuery('search') search: string,
+    _: FWRequest,
+    res: FWResponse
   ) {
     console.log(query, params, id, search)
+    res.plain('<h1>Hello World</h1>', 'text/html')
     return query
   }
 

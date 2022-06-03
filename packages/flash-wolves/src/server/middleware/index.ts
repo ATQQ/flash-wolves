@@ -110,6 +110,23 @@ export function expandHttpRespPrototype(http: ServerOptions): void {
   resp.failWithError = function failWithError(err) {
     this.fail(err.code, err.msg)
   }
+  resp.plain = function plain(data, contentType?: string) {
+    // eslint-disable-next-line @typescript-eslint/no-this-alias
+    const _this: FWResponse = this
+    if (!resp.writableEnded) {
+      if (contentType) {
+        _this.setHeader('content-type', contentType)
+      }
+      // 压缩数据
+      if (_this.contentEncoding) {
+        _this.setHeader('Content-Encoding', _this.contentEncoding)
+        _this.end(compressFn[_this.contentEncoding](Buffer.from(data)))
+        return
+      }
+
+      _this.end(data)
+    }
+  }
 }
 
 const methodMap = {

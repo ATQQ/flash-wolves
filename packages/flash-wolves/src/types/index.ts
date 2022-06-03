@@ -10,6 +10,7 @@ export type reqNotFound = () => void
 export type reqSuccess = (data?: unknown) => void
 export type reqFail = (code: number, msg: string, data?: unknown) => void
 export type failWithError = (err: CodeMsg) => void
+export type plainResponse = (content: string, contentType?: string) => void
 
 export interface SuperRequest {
   query?: any
@@ -24,6 +25,7 @@ export interface SuperResponse {
   success: reqSuccess
   fail: reqFail
   failWithError: failWithError
+  plain: plainResponse
   contentEncoding?: AppResponseCompressType
 }
 
