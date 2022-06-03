@@ -10,8 +10,12 @@ export interface IRoute {
   routeConfig?: RouteConfig
 }
 
+export interface IMetaParams {
+  [fnName: string]: number[]
+}
 export interface IClassData {
   prefix?: string
   routeConfig?: RouteConfig
   routeMap?: Map<string, IRoute>
+  requestParamsMap?: Map<string, IMetaParams>
 }

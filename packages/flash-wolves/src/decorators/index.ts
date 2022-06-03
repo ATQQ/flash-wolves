@@ -2,17 +2,14 @@ import { MetaData } from '@/store'
 import type { Method, FWRequest, FWResponse } from '@/types'
 import { IClassData } from './type'
 
-export function RouterController(
+export function RouterController<T = Record<string, any>>(
   prefix?: string,
-  routeCfg?: Record<string, any>
+  routeCfg?: T
 ) {
   return function routerDecorators(target) {
-    prefix = prefix || ''
-    target._prefix = prefix
     MetaData.set<IClassData>('class', target, {
       prefix,
-      routeConfig: routeCfg,
-      routeMap: new Map()
+      routeConfig: routeCfg
     })
   }
 }
@@ -28,14 +25,19 @@ export function RequestValue(key: string) {
     paramIdx: number
   ) {
     // 初始化一个Map 存储映射数据 reqKey => fnNameWithParamIdxArr
-    // 挂在构造函数上
-    if (!target.constructor.requestParamsMap) {
-      target.constructor.requestParamsMap = new Map()
+    if (
+      !MetaData.get<IClassData>('class', target.constructor)?.requestParamsMap
+    ) {
+      MetaData.set<IClassData>('class', target.constructor, {
+        requestParamsMap: new Map()
+      })
     }
 
     // 获取存储数据的Map
-    const { requestParamsMap } = target.constructor
-
+    const { requestParamsMap } = MetaData.get<IClassData>(
+      'class',
+      target.constructor
+    )
     // 初始化一个对象
     if (!requestParamsMap.get(key)) {
       requestParamsMap.set(key, {})
@@ -92,19 +94,18 @@ export function RouteMapping(method: Method, path: string, options?: any) {
     if (typeof target[key] !== 'function') {
       throw new TypeError('not function')
     }
-
-    if (!target.constructor.routeMap) {
-      target.constructor.routeMap = new Map()
+    if (!MetaData.get<IClassData>('class', target.constructor)?.routeMap) {
+      MetaData.set<IClassData>('class', target.constructor, {
+        routeMap: new Map()
+      })
     }
-    if (!target.constructor.requestParamsMap) {
-      target.constructor.requestParamsMap = new Map()
-    }
-    const { requestParamsMap } = target.constructor
-
     // 原来的函数
     const fn = descriptor.value
-
-    target.constructor.routeMap.set(`${method}-${path}`, {
+    const { routeMap, requestParamsMap } = MetaData.get<IClassData>(
+      'class',
+      target.constructor
+    )
+    routeMap.set(`${method}-${path}`, {
       method,
       path,
       callback: (req: FWRequest, res: FWResponse) => {
@@ -133,7 +134,7 @@ export function RouteMapping(method: Method, path: string, options?: any) {
         // 执行原来的调用
         return fn.apply(target, argv)
       },
-      options
+      routeConfig: options
     })
   }
 }

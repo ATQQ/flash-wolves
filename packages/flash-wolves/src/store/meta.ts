@@ -11,7 +11,10 @@ export default class MetaData {
 
   static set<T = any>(type: metaType, target: any, value: Partial<T>) {
     if (type === 'class') {
-      MetaData.classMap.set(target, value)
+      MetaData.classMap.set(target, {
+        ...MetaData.get('class', target),
+        ...value
+      })
     }
   }
 }

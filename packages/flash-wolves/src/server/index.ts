@@ -177,8 +177,7 @@ export default class FW extends Router {
         ? controller
         : controller.__proto__.constructor
       const classMetaData = MetaData.get<IClassData>('class', constructor)
-      const prefix = constructor._prefix
-      const { routeMap } = constructor
+      const { prefix, routeMap, routeConfig } = classMetaData
       const name = constructor?.name || 'controller'
 
       if (!routeMap) {
@@ -186,6 +185,10 @@ export default class FW extends Router {
         return
       }
       for (const [_, route] of routeMap) {
+        route.routeConfig = {
+          ...routeConfig,
+          ...route.routeConfig
+        }
         route.path = join(prefix, route.path)
         this._routes.push(route)
       }

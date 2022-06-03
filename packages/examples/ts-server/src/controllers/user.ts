@@ -7,9 +7,9 @@ import {
   ReqBody
 } from 'flash-wolves'
 
-@RouterController('user')
+@RouterController('user', { power: 'ok' })
 export default class User {
-  @Get('info/:id', { power: 'ok' })
+  @Get('info/:id', { user: '33' })
   getUserInfo(
     @ReqQuery() query,
     @ReqParams() params,
