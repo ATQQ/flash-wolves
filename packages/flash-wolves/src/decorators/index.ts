@@ -24,22 +24,12 @@ export function RequestValue(key: string) {
     fnName: string,
     paramIdx: number
   ) {
-    // 初始化一个Map 存储映射数据 reqKey => fnNameWithParamIdxArr
-    if (
-      !MetaData.get<IClassData>('class', target.constructor)?.requestParamsMap
-    ) {
-      MetaData.set<IClassData>('class', target.constructor, {
-        requestParamsMap: new Map()
-      })
-    }
-
+    const { constructor } = target
     // 获取存储数据的Map
-    const { requestParamsMap } = MetaData.get<IClassData>(
-      'class',
-      target.constructor
-    )
+    const { requestParamsMap } = MetaData.get<IClassData>('class', constructor)
+
     // 初始化一个对象
-    if (!requestParamsMap.get(key)) {
+    if (!requestParamsMap.has(key)) {
       requestParamsMap.set(key, {})
     }
     // 获取xx参数
@@ -94,11 +84,7 @@ export function RouteMapping(method: Method, path: string, options?: any) {
     if (typeof target[key] !== 'function') {
       throw new TypeError('not function')
     }
-    if (!MetaData.get<IClassData>('class', target.constructor)?.routeMap) {
-      MetaData.set<IClassData>('class', target.constructor, {
-        routeMap: new Map()
-      })
-    }
+
     // 原来的函数
     const fn = descriptor.value
     const { routeMap, requestParamsMap } = MetaData.get<IClassData>(
