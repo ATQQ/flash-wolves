@@ -118,7 +118,8 @@ export function RouteMapping(method: Method, path: string, options?: any) {
         argv[lastUndefinedIdx + 1] = res
 
         // 执行原来的调用
-        return fn.apply(target, argv)
+        // 将req于res绑定到函数额this上
+        return fn.apply({ _ctx: { req, res }, ...target }, argv)
       },
       routeConfig: options
     })
