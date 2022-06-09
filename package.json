@@ -10,7 +10,10 @@
   "scripts": {
     "lint": "eslint packages/** --ext .js,.ts --fix",
     "dev": "pnpm dev --recursive --parallel --filter flash-wolves --filter ts-server",
-    "build": "pnpm build --recursive --filter flash-wolves"
+    "build": "pnpm build --recursive --filter flash-wolves",
+    "version-packages": "changeset version",
+    "release": "pnpm build && pnpm release:only",
+    "release:only": "changeset publish --registry=https://registry.npmjs.com/"
   },
   "devDependencies": {
     "@changesets/cli": "^2.22.0",

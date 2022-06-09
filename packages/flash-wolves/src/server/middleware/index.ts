@@ -134,7 +134,8 @@ const methodMap = {
   'fw-json': 'json',
   'fw-success': 'success',
   'fw-fail': 'fail',
-  'fw-failWithError': 'failWithError'
+  'fw-failWithError': 'failWithError',
+  'fw-plain': 'plain'
 }
 
 // TODO:实现返回数据预览
@@ -171,6 +172,13 @@ export class Response {
     return {
       type: methodMap['fw-failWithError'],
       data: [err]
+    }
+  }
+
+  static plain(data: string, contentType?: string): unknown {
+    return {
+      type: methodMap['fw-plain'],
+      data: [data, contentType]
     }
   }
 }
