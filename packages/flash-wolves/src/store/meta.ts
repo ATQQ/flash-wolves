@@ -8,7 +8,7 @@ function getDefaultData(type: metaType) {
     routeMap: new Map(),
     requestParamsMap: new Map(),
     prefix: '',
-    routeConfig: {}
+    meta: {}
   }
   if (type === 'class') {
     return classData

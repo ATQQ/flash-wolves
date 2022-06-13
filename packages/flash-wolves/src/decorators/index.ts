@@ -1,15 +1,12 @@
 import { MetaData } from '@/store'
-import type { Method, FWRequest, FWResponse } from '@/types'
+import type { Method, FWRequest, FWResponse, RouteMeta } from '@/types'
 import { IClassData } from './type'
 
-export function RouterController<T = Record<string, any>>(
-  prefix?: string,
-  routeCfg?: T
-) {
+export function RouterController(prefix?: string, routeMeta?: RouteMeta) {
   return function routerDecorators(target) {
     MetaData.set<IClassData>('class', target, {
       prefix,
-      routeConfig: routeCfg
+      meta: routeMeta
     })
   }
 }
@@ -79,7 +76,7 @@ export function ReqParams(key?: string) {
   return RequestValue(key ? `${base}.${key}` : base)
 }
 
-export function RouteMapping(method: Method, path: string, options?: any) {
+export function RouteMapping(method: Method, path: string, meta?: RouteMeta) {
   return function routeDecorators(target, key, descriptor) {
     if (typeof target[key] !== 'function') {
       throw new TypeError('not function')
@@ -121,39 +118,39 @@ export function RouteMapping(method: Method, path: string, options?: any) {
         // 将req于res绑定到函数额this上
         return fn.apply({ _ctx: { req, res }, ...target }, argv)
       },
-      routeConfig: options
+      meta
     })
   }
 }
 
-export function GetMapping(path, options?: any) {
-  return RouteMapping('get', path, options)
+export function GetMapping(path, meta?: RouteMeta) {
+  return RouteMapping('get', path, meta)
 }
 
-export function PostMapping(path, options?: any) {
-  return RouteMapping('post', path, options)
+export function PostMapping(path, meta?: RouteMeta) {
+  return RouteMapping('post', path, meta)
 }
 
-export function DeleteMapping(path, options?: any) {
-  return RouteMapping('delete', path, options)
+export function DeleteMapping(path, meta?: RouteMeta) {
+  return RouteMapping('delete', path, meta)
 }
 
-export function PutMapping(path, options?: any) {
-  return RouteMapping('put', path, options)
+export function PutMapping(path, meta?: RouteMeta) {
+  return RouteMapping('put', path, meta)
 }
 
-export function Get(path, options?: any) {
-  return RouteMapping('get', path, options)
+export function Get(path, meta?: RouteMeta) {
+  return RouteMapping('get', path, meta)
 }
 
-export function Post(path, options?: any) {
-  return RouteMapping('post', path, options)
+export function Post(path, meta?: RouteMeta) {
+  return RouteMapping('post', path, meta)
 }
 
-export function Delete(path, options?: any) {
-  return RouteMapping('delete', path, options)
+export function Delete(path, meta?: RouteMeta) {
+  return RouteMapping('delete', path, meta)
 }
 
-export function Put(path, options?: any) {
-  return RouteMapping('put', path, options)
+export function Put(path, meta?: RouteMeta) {
+  return RouteMapping('put', path, meta)
 }

@@ -10,9 +10,9 @@ import {
   Response
 } from 'flash-wolves'
 
-@RouterController('user', { power: 'ok' })
+@RouterController('user', { requiresAuth: true })
 export default class User {
-  @Get('info/:id', { user: '33' })
+  @Get('info/:id', { isAdmin: true })
   getUserInfo(
     @ReqQuery() query,
     @ReqParams() params,

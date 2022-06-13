@@ -1,7 +1,6 @@
 import { join } from 'path'
 import dotenv from 'dotenv'
 import { existsSync, readFileSync } from 'fs'
-import type { Record } from '@/types'
 
 interface Options {
   // 模式

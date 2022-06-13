@@ -46,17 +46,20 @@ export type Method =
   | 'head'
   | 'options'
 
+// eslint-disable-next-line @typescript-eslint/no-empty-interface
+export interface RouteMeta extends Record<string | number | symbol, unknown> {}
+
 export interface Route {
   method: Method
   path: string
   callback: Callback
-  options?: any
+  meta?: RouteMeta
 }
 
 export type Controller = (
   path: string,
   callback: Callback,
-  options?: any
+  options?: RouteMeta
 ) => void
 export type RuntimeErrorInterceptor = (
   req: FWRequest,
@@ -97,8 +100,4 @@ export interface AppOptions {
    * @default 'gzip''
    */
   compress?: AppResponseCompressType | AppResponseCompressType[] | boolean
-}
-
-export type Record<K extends keyof any, T> = {
-  [P in K]: T
 }
