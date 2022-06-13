@@ -1,6 +1,7 @@
 import http from 'http'
 // types
 import { join } from 'path'
+import portfinder from 'portfinder'
 import {
   RuntimeErrorInterceptor,
   FWRequest,
@@ -28,7 +29,7 @@ import { MetaData } from '@/store'
 import { IClassData } from '@/decorators/type'
 
 const PORT = 3000
-const HOSTNAME = 'localhost'
+const HOSTNAME = '127.0.0.1'
 // 加载环境变量
 const MODE = process.env.NODE_ENV || 'development'
 const ENV_DIR = process.cwd()
@@ -203,10 +204,16 @@ export default class FW extends Router {
   }
 
   public listen(port?: number, hostname?: string, callback?: () => void): void {
-    port = port || PORT
-    hostname = hostname || HOSTNAME
-    this.server.listen(port, hostname, callback)
-    console.log('server start success', `http://${hostname}:${port}`)
+    portfinder
+      .getPortPromise({
+        port: port || PORT,
+        host: hostname || HOSTNAME
+      })
+      .then((port) => {
+        hostname = hostname || HOSTNAME
+        this.server.listen(port, hostname, callback)
+        console.log('server start success', `http://${hostname}:${port}`)
+      })
   }
 
   public callback() {
