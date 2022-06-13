@@ -116,7 +116,9 @@ export function RouteMapping(method: Method, path: string, meta?: RouteMeta) {
 
         // 执行原来的调用
         // 将req于res绑定到函数额this上
-        return fn.apply({ _ctx: { req, res }, ...target }, argv)
+        const _t = { _ctx: { req, res } }
+        Object.setPrototypeOf(_t, target)
+        return fn.apply(_t, argv)
       },
       meta
     })

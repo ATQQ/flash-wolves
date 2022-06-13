@@ -12,6 +12,10 @@ import {
 
 @RouterController('user', { requiresAuth: true })
 export default class User {
+  private hello() {
+    console.log('hello')
+  }
+
   @Get('info/:id', { isAdmin: true })
   getUserInfo(
     @ReqQuery() query,
@@ -21,8 +25,8 @@ export default class User {
     // req: FWRequest,
     // res: FWResponse
   ) {
+    this.hello()
     console.log(query, params, id, search)
-    // console.log(this.ctx)
     // res.plain('<h1>Hello World</h1>', 'text/html')
     // return Response.plain('123')
     return query
