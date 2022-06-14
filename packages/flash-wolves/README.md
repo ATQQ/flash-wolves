@@ -145,7 +145,7 @@ see [node-server](https://github.com/atqq/node-server) get the template project
 * [x] Direct return content 
 * [x] auto load `.env` files 
 * [x] Template project
-* [ ] Add res.xxx methods (like res.html(str)) 'res.plain' supports the return of text
+* [x] Add res.xxx methods (like res.html(str)) 'res.plain' supports the return of text
 * [ ] Improve the usage documentation (VitePress)
 * [ ] Support static sources
 * [ ] Auto API
