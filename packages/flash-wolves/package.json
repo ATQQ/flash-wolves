@@ -1,6 +1,6 @@
 {
   "name": "flash-wolves",
-  "version": "0.2.2",
+  "version": "0.3.0",
   "license": "MIT",
   "description": "a simple & flexible & fast web framework",
   "author": {
@@ -32,9 +32,11 @@
   "files": [
     "dist",
     "package.json",
-    "README.md"
+    "README.md",
+    "CHANGELOG.md"
   ],
   "dependencies": {
-    "dotenv": "^16.0.0"
+    "dotenv": "^16.0.0",
+    "portfinder": "^1.0.28"
   }
 }

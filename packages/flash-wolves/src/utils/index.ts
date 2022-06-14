@@ -1,7 +1,6 @@
 import { join } from 'path'
 import dotenv from 'dotenv'
 import { existsSync, readFileSync } from 'fs'
-import type { Record } from '@/types'
 
 interface Options {
   // 模式
@@ -18,20 +17,18 @@ const defaultOptions: Options = {
   mode: 'development',
   envDir: process.cwd(),
   prefix: '',
-  ignoreProcessEnv: false,
+  ignoreProcessEnv: false
 }
 // eslint-disable-next-line import/prefer-default-export
 export function loadEnv(options?: Options): Record<string, string> {
   // 设置默认值
   options = { ...defaultOptions, ...(options || {}) }
-  const {
-    mode, envDir, prefix, ignoreProcessEnv,
-  } = options
+  const { mode, envDir, prefix, ignoreProcessEnv } = options
 
   if (mode === 'local') {
     throw new Error(
-      '"local" cannot be used as a mode name because it conflicts with '
-      + 'the .local postfix for .env files.',
+      '"local" cannot be used as a mode name because it conflicts with ' +
+        'the .local postfix for .env files.'
     )
   }
 
@@ -41,7 +38,7 @@ export function loadEnv(options?: Options): Record<string, string> {
     /** mode local file */ `.env.${mode}.local`,
     /** mode file */ `.env.${mode}`,
     /** local file */ '.env.local',
-    /** default file */ '.env',
+    /** default file */ '.env'
   ]
 
   for (const key in process.env) {

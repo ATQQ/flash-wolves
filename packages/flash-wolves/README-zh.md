@@ -139,8 +139,8 @@ ts-node index.ts
 * [x] 直接返回的内容 
 * [x] 自动化读取.env中所有的环境变量 
 * [x] 模板工程
+* [x] 添加res.xxx方法 (如res.html(str))，`res.plain` 支持返回文本
 * [ ] 完善使用文档（VitePress）
-* [ ] 添加res.xxx方法 (如res.html(str))
 * [ ] 支持指定静态资源目录挂载
 * [ ] 自动生成API文档
 * [ ] 。。。敬请期待

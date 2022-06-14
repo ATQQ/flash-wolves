@@ -1,9 +1,15 @@
 import http from 'http'
 // types
 import { join } from 'path'
+import portfinder from 'portfinder'
 import {
   RuntimeErrorInterceptor,
-  FWRequest, FWResponse, Middleware, MiddlewarePosition, AppOptions, AppResponseCompressType,
+  FWRequest,
+  FWResponse,
+  Middleware,
+  MiddlewarePosition,
+  AppOptions,
+  AppResponseCompressType
 } from '@/types'
 
 // router
@@ -11,18 +17,25 @@ import Router from '@/router'
 
 // 自带中间件
 import {
-  defaultOperate, expandHttpRespPrototype, matchRoute, runRoute, printRequest, wrapperRequest,
+  defaultOperate,
+  expandHttpRespPrototype,
+  matchRoute,
+  runRoute,
+  printRequest,
+  wrapperRequest
 } from './middleware'
 import { loadEnv } from '@/utils'
+import { MetaData } from '@/store'
+import { IClassData } from '@/decorators/type'
 
 const PORT = 3000
-const HOSTNAME = 'localhost'
+const HOSTNAME = '127.0.0.1'
 // 加载环境变量
 const MODE = process.env.NODE_ENV || 'development'
 const ENV_DIR = process.cwd()
 loadEnv({
   mode: MODE,
-  envDir: ENV_DIR,
+  envDir: ENV_DIR
 })
 
 // 拓展httpResponse的原型
@@ -47,7 +60,11 @@ export default class FW extends Router {
 
   private runtimeErrorInterceptor: RuntimeErrorInterceptor | undefined
 
-  private async catchRuntimeErrorFn(req: FWRequest, res: FWResponse, error: Error) {
+  private async catchRuntimeErrorFn(
+    req: FWRequest,
+    res: FWResponse,
+    error: Error
+  ) {
     if (!res.writableEnded && this.beforeRuntimeErrorInterceptor) {
       await this.beforeRuntimeErrorInterceptor(req, res, error)
     }
@@ -79,7 +96,10 @@ export default class FW extends Router {
     }
   }
 
-  private _use(middleware: Middleware, position: MiddlewarePosition = 'last'): void {
+  private _use(
+    middleware: Middleware,
+    position: MiddlewarePosition = 'last'
+  ): void {
     if (position === 'last') {
       this.middleWares.push(addInterceptor(() => middleware))
     }
@@ -89,23 +109,26 @@ export default class FW extends Router {
   }
 
   // 重载配置
-  constructor();
+  constructor()
 
-  constructor(afterRequest?: Middleware);
+  constructor(afterRequest?: Middleware)
 
-  constructor(options?: AppOptions);
+  constructor(options?: AppOptions)
 
-  constructor(afterRequest?: Middleware, options?: AppOptions);
+  constructor(afterRequest?: Middleware, options?: AppOptions)
 
   constructor(v1?: Middleware | AppOptions, v2?: AppOptions) {
     super()
     // 初始化
     this.middleWares = []
     const {
-      printReq, beforeMathRoute, beforeRunRoute,
-      beforeReturnRuntimeError, catchRuntimeError,
+      printReq,
+      beforeMathRoute,
+      beforeRunRoute,
+      beforeReturnRuntimeError,
+      catchRuntimeError,
       afterRequest,
-      compress,
+      compress
     } = (typeof v1 !== 'function' ? v1 : v2) || {}
 
     if (typeof compress !== 'boolean') {
@@ -124,7 +147,9 @@ export default class FW extends Router {
     this._use(printReq || printRequest)
 
     // 做一些默认操作
-    this._use(defaultOperate.bind(this, { contentEncoding: this.contentEncoding }))
+    this._use(
+      defaultOperate.bind(this, { contentEncoding: this.contentEncoding })
+    )
 
     // 构造函数
     this._use(typeof v1 === 'function' ? v1 : afterRequest)
@@ -149,9 +174,11 @@ export default class FW extends Router {
   public addController(controllers: any | any[]) {
     controllers = [controllers].flat()
     for (const controller of controllers) {
-      const constructor = controller?.name ? controller : controller.__proto__.constructor
-      const prefix = constructor._prefix
-      const { routeMap } = constructor
+      const constructor = controller?.name
+        ? controller
+        : controller.__proto__.constructor
+      const classMetaData = MetaData.get<IClassData>('class', constructor)
+      const { prefix, routeMap, meta } = classMetaData
       const name = constructor?.name || 'controller'
 
       if (!routeMap) {
@@ -159,6 +186,10 @@ export default class FW extends Router {
         return
       }
       for (const [_, route] of routeMap) {
+        route.meta = {
+          ...meta,
+          ...route.meta
+        }
         route.path = join(prefix, route.path)
         this._routes.push(route)
       }
@@ -173,10 +204,16 @@ export default class FW extends Router {
   }
 
   public listen(port?: number, hostname?: string, callback?: () => void): void {
-    port = port || PORT
-    hostname = hostname || HOSTNAME
-    this.server.listen(port, hostname, callback)
-    console.log('server start success', `http://${hostname}:${port}`)
+    portfinder
+      .getPortPromise({
+        port: port || PORT,
+        host: hostname || HOSTNAME
+      })
+      .then((port) => {
+        hostname = hostname || HOSTNAME
+        this.server.listen(port, hostname, callback)
+        console.log('server start success', `http://${hostname}:${port}`)
+      })
   }
 
   public callback() {

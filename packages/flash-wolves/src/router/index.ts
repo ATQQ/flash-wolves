@@ -1,12 +1,12 @@
 /* eslint-disable global-require */
 /* eslint-disable import/no-dynamic-require */
 import { join } from 'path'
-import type {
-  Callback, Method, Route, Controller,
-} from '@/types'
+import type { Callback, Method, Route, Controller, RouteMeta } from '@/types'
 
 class Router {
   private _prefix: string
+
+  private _meta: RouteMeta
 
   private controller(method: Method): Controller {
     return this.registerRoute.bind(this, method)
@@ -14,19 +14,28 @@ class Router {
 
   protected _routes: Route[]
 
-  constructor(prefix = '') {
-    this._prefix = prefix
+  constructor(prefix?: string, meta?: RouteMeta) {
+    this._prefix = prefix || ''
     this._routes = []
+    this._meta = meta
   }
 
-  public registerRoute(method: Method, path: string, callback: Callback, options?: unknown) {
-    if (options) {
-      this.addRoute({
-        method, path: join(this._prefix, path), callback, options,
-      })
-      return
+  public registerRoute(
+    method: Method,
+    path: string,
+    callback: Callback,
+    meta?: RouteMeta
+  ) {
+    const routeMeta = {
+      ...this._meta,
+      ...meta
     }
-    this.addRoute({ method, path: join(this._prefix, path), callback })
+    this.addRoute({
+      method,
+      path: join(this._prefix, path),
+      callback,
+      meta: routeMeta
+    })
   }
 
   public addRoute(route: Route): void {
@@ -39,8 +48,8 @@ class Router {
     }
   }
 
-  public addRouter(router:Router|Router[]) {
-    [router].flat().forEach((r) => {
+  public addRouter(router: Router | Router[]) {
+    ;[router].flat().forEach((r) => {
       this.addRoutes(r.getRoutes())
     })
   }

@@ -1,8 +1,13 @@
-import type { Method, FWRequest, FWResponse } from '@/types'
+import { MetaData } from '@/store'
+import type { Method, FWRequest, FWResponse, RouteMeta } from '@/types'
+import { IClassData } from './type'
 
-export function RouterController(prefix = '') {
+export function RouterController(prefix?: string, routeMeta?: RouteMeta) {
   return function routerDecorators(target) {
-    target._prefix = prefix
+    MetaData.set<IClassData>('class', target, {
+      prefix,
+      meta: routeMeta
+    })
   }
 }
 
@@ -10,19 +15,18 @@ export function RouterController(prefix = '') {
  * 获取HTTP Request 上的指定键的值
  * @param key 键名
  */
-export function RequestValue(key:string) {
-  return function requestParamDecorators(target, fnName:string, paramIdx:number) {
-    // 初始化一个Map 存储映射数据 reqKey => fnNameWithParamIdxArr
-    // 挂在构造函数上
-    if (!target.constructor.requestParamsMap) {
-      target.constructor.requestParamsMap = new Map()
-    }
-
+export function RequestValue(key: string) {
+  return function requestParamDecorators(
+    target,
+    fnName: string,
+    paramIdx: number
+  ) {
+    const { constructor } = target
     // 获取存储数据的Map
-    const { requestParamsMap } = target.constructor
+    const { requestParamsMap } = MetaData.get<IClassData>('class', constructor)
 
     // 初始化一个对象
-    if (!requestParamsMap.get(key)) {
+    if (!requestParamsMap.has(key)) {
       requestParamsMap.set(key, {})
     }
     // 获取xx参数
@@ -49,7 +53,7 @@ export function RequestValue(key:string) {
  * 获取HTTP Request Query上指定键的值
  * @param key
  */
-export function ReqQuery(key?:string) {
+export function ReqQuery(key?: string) {
   const base = 'query'
   return RequestValue(key ? `${base}.${key}` : base)
 }
@@ -58,7 +62,7 @@ export function ReqQuery(key?:string) {
  * 获取HTTP Request Body上的指定键的值
  * @param key
  */
-export function ReqBody(key?:string) {
+export function ReqBody(key?: string) {
   const base = 'body'
   return RequestValue(key ? `${base}.${key}` : base)
 }
@@ -67,32 +71,27 @@ export function ReqBody(key?:string) {
  * 获取指定路由参数
  * @param key
  */
-export function ReqParams(key?:string) {
+export function ReqParams(key?: string) {
   const base = 'params'
   return RequestValue(key ? `${base}.${key}` : base)
 }
 
-export function RouteMapping(method: Method, path: string, options?: any) {
+export function RouteMapping(method: Method, path: string, meta?: RouteMeta) {
   return function routeDecorators(target, key, descriptor) {
     if (typeof target[key] !== 'function') {
       throw new TypeError('not function')
     }
 
-    if (!target.constructor.routeMap) {
-      target.constructor.routeMap = new Map()
-    }
-    if (!target.constructor.requestParamsMap) {
-      target.constructor.requestParamsMap = new Map()
-    }
-    const { requestParamsMap } = target.constructor
-
     // 原来的函数
     const fn = descriptor.value
-
-    target.constructor.routeMap.set(`${method}-${path}`, {
+    const { routeMap, requestParamsMap } = MetaData.get<IClassData>(
+      'class',
+      target.constructor
+    )
+    routeMap.set(`${method}-${path}`, {
       method,
       path,
-      callback: (req:FWRequest, res:FWResponse) => {
+      callback: (req: FWRequest, res: FWResponse) => {
         const argv = Array.from({ length: fn.length })
         // 修改参数
         for (const [param, fnNameWithIndx] of requestParamsMap.entries()) {
@@ -116,41 +115,44 @@ export function RouteMapping(method: Method, path: string, options?: any) {
         argv[lastUndefinedIdx + 1] = res
 
         // 执行原来的调用
-        return fn.apply(target, argv)
+        // 将req于res绑定到函数额this上
+        const _t = { _ctx: { req, res } }
+        Object.setPrototypeOf(_t, target)
+        return fn.apply(_t, argv)
       },
-      options,
+      meta
     })
   }
 }
 
-export function GetMapping(path, options?: any) {
-  return RouteMapping('get', path, options)
+export function GetMapping(path, meta?: RouteMeta) {
+  return RouteMapping('get', path, meta)
 }
 
-export function PostMapping(path, options?: any) {
-  return RouteMapping('post', path, options)
+export function PostMapping(path, meta?: RouteMeta) {
+  return RouteMapping('post', path, meta)
 }
 
-export function DeleteMapping(path, options?: any) {
-  return RouteMapping('delete', path, options)
+export function DeleteMapping(path, meta?: RouteMeta) {
+  return RouteMapping('delete', path, meta)
 }
 
-export function PutMapping(path, options?: any) {
-  return RouteMapping('put', path, options)
+export function PutMapping(path, meta?: RouteMeta) {
+  return RouteMapping('put', path, meta)
 }
 
-export function Get(path, options?: any) {
-  return RouteMapping('get', path, options)
+export function Get(path, meta?: RouteMeta) {
+  return RouteMapping('get', path, meta)
 }
 
-export function Post(path, options?: any) {
-  return RouteMapping('post', path, options)
+export function Post(path, meta?: RouteMeta) {
+  return RouteMapping('post', path, meta)
 }
 
-export function Delete(path, options?: any) {
-  return RouteMapping('delete', path, options)
+export function Delete(path, meta?: RouteMeta) {
+  return RouteMapping('delete', path, meta)
 }
 
-export function Put(path, options?: any) {
-  return RouteMapping('put', path, options)
+export function Put(path, meta?: RouteMeta) {
+  return RouteMapping('put', path, meta)
 }
