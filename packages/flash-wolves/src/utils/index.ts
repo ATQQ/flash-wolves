@@ -68,3 +68,7 @@ export function loadEnv(options?: Options): Record<string, string> {
   }
   return env
 }
+
+export function pathJoin(...paths: string[]) {
+  return paths.join('/').replace(/\/+/g, '/')
+}

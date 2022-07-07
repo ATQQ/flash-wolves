@@ -1,7 +1,5 @@
-/* eslint-disable global-require */
-/* eslint-disable import/no-dynamic-require */
-import { join } from 'path'
 import type { Callback, Method, Route, Controller, RouteMeta } from '@/types'
+import { pathJoin } from '@/utils'
 
 class Router {
   private _prefix: string
@@ -32,7 +30,7 @@ class Router {
     }
     this.addRoute({
       method,
-      path: join(this._prefix, path),
+      path: pathJoin(this._prefix, path),
       callback,
       meta: routeMeta
     })
@@ -53,18 +51,6 @@ class Router {
       this.addRoutes(r.getRoutes())
     })
   }
-
-  // public setControllerDir(dir:string|string[]) {
-  //   const dirs = [dir].flat()
-  //   for (const d of dirs) {
-  //     const files = readdirSync(d, { withFileTypes: true })
-  //     for (const file of files) {
-  //       if (file.isFile()) {
-  //         this.addController(require(join(d, file.name)))
-  //       }
-  //     }
-  //   }
-  // }
 
   public get = this.controller('get')
 

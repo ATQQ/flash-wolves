@@ -1,8 +1,6 @@
 import http from 'http'
-// types
-import { join } from 'path'
 import portfinder from 'portfinder'
-import {
+import type {
   RuntimeErrorInterceptor,
   FWRequest,
   FWResponse,
@@ -24,7 +22,7 @@ import {
   printRequest,
   wrapperRequest
 } from './middleware'
-import { loadEnv } from '@/utils'
+import { loadEnv, pathJoin } from '@/utils'
 import { MetaData } from '@/store'
 import { IClassData } from '@/decorators/type'
 
@@ -190,7 +188,7 @@ export default class FW extends Router {
           ...meta,
           ...route.meta
         }
-        route.path = join(prefix, route.path)
+        route.path = pathJoin(prefix, route.path)
         this._routes.push(route)
       }
     }
