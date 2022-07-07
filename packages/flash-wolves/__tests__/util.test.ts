@@ -7,4 +7,6 @@ test('pathJoin', () => {
   expect(pathJoin('a/', '/b/', 'c')).toBe('a/b/c')
   expect(pathJoin('/a', '/b/', 'c')).toBe('/a/b/c')
   expect(pathJoin('/a/', 'b/', 'c')).toBe('/a/b/c')
+  expect(pathJoin('user', '', '')).toBe('user')
+  expect(pathJoin('user', '')).toBe('user')
 })

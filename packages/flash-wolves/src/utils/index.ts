@@ -70,5 +70,5 @@ export function loadEnv(options?: Options): Record<string, string> {
 }
 
 export function pathJoin(...paths: string[]) {
-  return paths.join('/').replace(/\/+/g, '/')
+  return paths.join('/').replace(/\/+/g, '/').replace(/\/$/, '')
 }

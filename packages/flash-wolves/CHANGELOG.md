@@ -1,5 +1,11 @@
 # flash-wolves
 
+## 0.3.2
+
+### Patch Changes
+
+- fix: route 404
+
 ## 0.3.1
 
 ### Patch Changes
