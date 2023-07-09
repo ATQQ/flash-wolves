@@ -9,8 +9,8 @@
   },
   "scripts": {
     "lint": "eslint packages/** --ext .js,.ts --fix",
-    "dev": "pnpm dev --recursive --parallel --filter flash-wolves --filter ts-server",
-    "build": "pnpm build --recursive --filter flash-wolves",
+    "dev": "pnpm --recursive --parallel --filter flash-wolves --filter ts-server dev",
+    "build": "pnpm --recursive --filter flash-wolves build",
     "version-packages": "changeset version",
     "release": "pnpm build && pnpm release:only",
     "release:only": "changeset publish --registry=https://registry.npmjs.com/",

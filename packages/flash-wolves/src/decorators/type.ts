@@ -10,4 +10,9 @@ export interface IClassData {
   meta?: RouteMeta
   routeMap?: Map<string, IRoute>
   requestParamsMap?: Map<string, IMetaParams>
+  injectValuesMap?: Map<any, string[]>
+}
+
+export interface IGlobalData {
+  provideValuesMap?: Map<any, any>
 }

@@ -1,6 +1,6 @@
 import { MetaData } from '@/store'
 import type { Method, FWRequest, FWResponse, RouteMeta } from '@/types'
-import { IClassData } from './type'
+import { IClassData, IGlobalData } from './type'
 
 export function RouterController(prefix?: string, routeMeta?: RouteMeta) {
   return function routerDecorators(target) {
@@ -76,6 +76,58 @@ export function ReqParams(key?: string) {
   return RequestValue(key ? `${base}.${key}` : base)
 }
 
+export const globalDataKey = Symbol('provideKey')
+
+export function Provide(key?: any) {
+  return function provideDecorators(Target: any) {
+    MetaData.get<IGlobalData>('global', globalDataKey).provideValuesMap.set(
+      key || Target,
+      (values) => {
+        const instance = new Target()
+
+        return new Proxy(instance, {
+          get(target, propKey) {
+            const originalMethod = target[propKey]
+            if (typeof originalMethod === 'function') {
+              return function (...args) {
+                return originalMethod.apply(
+                  getInjectThis(instance, values),
+                  args
+                )
+              }
+            }
+            return originalMethod
+          }
+        })
+      }
+    )
+  }
+}
+
+const injectCtxKey = Symbol.for('injectCtxKey')
+const inlineKey = [injectCtxKey]
+
+export function InjectCtx() {
+  return Inject(injectCtxKey)
+}
+export function Inject(key?: any) {
+  return function injectDecorators(target, _key) {
+    const { injectValuesMap } = MetaData.get<IClassData>(
+      'class',
+      target.constructor
+    )
+    key = key || _key
+
+    if (!injectValuesMap.has(key)) {
+      injectValuesMap.set(key, [])
+    }
+    injectValuesMap.get(key).push(_key)
+
+    // 存储结构示例
+    // injectKey => [field1,field2]
+  }
+}
+
 export function RouteMapping(method: Method, path: string, meta?: RouteMeta) {
   return function routeDecorators(target, key, descriptor) {
     if (typeof target[key] !== 'function') {
@@ -114,15 +166,50 @@ export function RouteMapping(method: Method, path: string, meta?: RouteMeta) {
         argv[lastUndefinedIdx] = req
         argv[lastUndefinedIdx + 1] = res
 
+        // provide 逻辑
+        const provideValues = getProvideValues()
+        provideValues.set(injectCtxKey, {
+          req,
+          res
+        })
+
+        // TODO: provide里面的inject 怎么处理？
+        // inject 逻辑
+        const _t: any = getInjectThis(target, provideValues)
+
         // 执行原来的调用
-        // 将req于res绑定到函数额this上
-        const _t = { _ctx: { req, res } }
-        Object.setPrototypeOf(_t, target)
         return fn.apply(_t, argv)
       },
       meta
     })
   }
+}
+
+function getProvideValues() {
+  return new Map(
+    MetaData.get<IGlobalData>(
+      'global',
+      globalDataKey
+    ).provideValuesMap.entries()
+  )
+}
+function getInjectThis(target, provideValues: Map<any, any>) {
+  const { constructor } = target
+  const { injectValuesMap } = MetaData.get<IClassData>('class', constructor)
+
+  const _t: any = {}
+  for (const [injectKey, targets] of injectValuesMap.entries()) {
+    targets.forEach((targetKey) => {
+      if (inlineKey.includes(injectKey)) {
+        _t[targetKey] = provideValues.get(injectKey)
+      } else {
+        _t[targetKey] = provideValues.get(injectKey)?.(provideValues)
+      }
+    })
+  }
+
+  Object.setPrototypeOf(_t, target)
+  return _t
 }
 
 export function GetMapping(path, meta?: RouteMeta) {
