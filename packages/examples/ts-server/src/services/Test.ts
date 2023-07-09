@@ -1,11 +1,11 @@
-import { Provide } from 'flash-wolves'
+import { Provide, Context } from 'flash-wolves'
 import { Inject, InjectCtx } from 'packages/flash-wolves/dist'
 import TestService2 from './Test2'
 
 @Provide()
 export default class TestService {
   @InjectCtx()
-  context
+  context: Context
 
   @Inject(TestService2)
   testService2: TestService2

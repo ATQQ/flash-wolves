@@ -6,7 +6,8 @@ import {
   Post,
   ReqBody,
   InjectCtx,
-  Inject
+  Inject,
+  Context
 } from 'flash-wolves'
 import TestService from '../services/Test'
 
@@ -20,7 +21,7 @@ export default class User {
   private test: TestService
 
   @InjectCtx()
-  private ctx: any
+  private ctx: Context
 
   @Get('info/:id', { isAdmin: true })
   getUserInfo(
@@ -33,6 +34,8 @@ export default class User {
   ) {
     this.test.hello()
     this.hello()
+    console.log('userInfo', this.ctx.userInfo)
+
     console.log(query, params, id, search)
     // res.plain('<h1>Hello World</h1>', 'text/html')
     // return Response.plain('123')

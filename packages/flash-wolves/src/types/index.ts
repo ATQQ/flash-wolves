@@ -49,6 +49,11 @@ export type Method =
 // eslint-disable-next-line @typescript-eslint/no-empty-interface
 export interface RouteMeta extends Record<string | number | symbol, unknown> {}
 
+// eslint-disable-next-line @typescript-eslint/no-empty-interface
+export interface Context extends Record<string | number | symbol, unknown> {
+  req: FWRequest
+  res: FWResponse
+}
 export interface Route {
   method: Method
   path: string

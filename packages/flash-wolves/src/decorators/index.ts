@@ -1,6 +1,7 @@
 import { MetaData } from '@/store'
 import type { Method, FWRequest, FWResponse, RouteMeta } from '@/types'
 import { IClassData, IGlobalData } from './type'
+import { reqCtxKey } from '@/utils'
 
 export function RouterController(prefix?: string, routeMeta?: RouteMeta) {
   return function routerDecorators(target) {
@@ -170,7 +171,9 @@ export function RouteMapping(method: Method, path: string, meta?: RouteMeta) {
         const provideValues = getProvideValues()
         provideValues.set(injectCtxKey, {
           req,
-          res
+          res,
+          // others
+          ...req[reqCtxKey]
         })
 
         // TODO: provide里面的inject 怎么处理？
