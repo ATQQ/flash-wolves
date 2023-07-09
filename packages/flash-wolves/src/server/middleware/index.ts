@@ -227,7 +227,8 @@ export function defaultOperate(
 
   // 记录压缩内容
   const acceptEncoding = req.headers['accept-encoding'] as string
-  const allowEncoding = acceptEncoding?.match(/(br|deflate|gzip)/g) || []
+  const allowEncoding: string[] =
+    acceptEncoding?.match(/(br|deflate|gzip)/g) || []
   const compressType = options.contentEncoding.find((v) =>
     allowEncoding.includes(v)
   )

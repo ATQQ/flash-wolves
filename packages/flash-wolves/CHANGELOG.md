@@ -1,5 +1,11 @@
 # flash-wolves
 
+## 0.4.0
+
+### Minor Changes
+
+- feat: 支持 Provide 和 Inject
+
 ## 0.3.2
 
 ### Patch Changes

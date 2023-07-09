@@ -72,3 +72,11 @@ export function loadEnv(options?: Options): Record<string, string> {
 export function pathJoin(...paths: string[]) {
   return paths.join('/').replace(/\/+/g, '/').replace(/\/$/, '')
 }
+
+export const reqCtxKey = Symbol.for('reqCtxKey')
+export function addContextValue(req: any, key: string, value: any) {
+  req[reqCtxKey] = {
+    ...(req[reqCtxKey] || {}),
+    [key]: value
+  }
+}

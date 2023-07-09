@@ -7,4 +7,7 @@ declare module 'flash-wolves' {
     // 需要鉴权
     requiresAuth?: boolean
   }
+  interface Context {
+    userInfo?: string
+  }
 }
