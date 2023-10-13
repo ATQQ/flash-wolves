@@ -1,5 +1,11 @@
 # flash-wolves
 
+## 0.4.1
+
+### Patch Changes
+
+- chore: 打印 debug 日志辅助调试
+
 ## 0.4.0
 
 ### Minor Changes
