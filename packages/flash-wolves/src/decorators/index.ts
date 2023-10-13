@@ -2,6 +2,7 @@ import { MetaData } from '@/store'
 import type { Method, FWRequest, FWResponse, RouteMeta } from '@/types'
 import { IClassData, IGlobalData } from './type'
 import { reqCtxKey } from '@/utils'
+import Logger from '@/utils/logger'
 
 export function RouterController(prefix?: string, routeMeta?: RouteMeta) {
   return function routerDecorators(target) {
@@ -112,6 +113,9 @@ export function InjectCtx() {
   return Inject(injectCtxKey)
 }
 export function Inject(key?: any) {
+  if (key === undefined) {
+    Logger.trace('Inject key is undefined')
+  }
   return function injectDecorators(target, _key) {
     const { injectValuesMap } = MetaData.get<IClassData>(
       'class',
